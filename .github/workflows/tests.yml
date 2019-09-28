@@ -22,5 +22,10 @@ jobs:
           npm run bootstrap
           cd backend
           npm run test
+      - name: Getting Code Coverage
+        run: |
+          npm install -g codecov
+          codecov
         env:
+          CODECOV_TOKEN: '1be4aaf8-fa5b-44d0-bfe2-17b876ba2cce'
           CI: true
