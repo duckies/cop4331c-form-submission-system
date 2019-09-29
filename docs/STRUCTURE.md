@@ -53,7 +53,7 @@ export class UserService {
 
 There are a few important concepts to discuss here:
 
-- The `@Injectable()` and `@InjectRepository(User)` lines are called decorators, and are usually used in Controllers to "inject" functionality into the function. This service is made injectable in order to inject the user repository, which is what TypeORM will use to allow us to access the database for this particular entity. You cannot access any other entity using this repository, only user entities. This keeps the code DRY and specialized.
+- The `@Injectable()` and `@InjectRepository(User)` lines are called decorators, and are usually used in Controllers to "inject" functionality into the class. This service is made injectable in order to inject the user repository, which is what TypeORM will use to allow us to access the database for this particular entity. You cannot access any other entity using this repository, only user entities. This keeps the code DRY and specialized.
 - For those not familiar with TypeScript, the things after the colons are types not unlike Java types. It allows your IDE to know what the repository is supposed to be (a repository of type user), and that the `id` argument must be a number. If you try to use the `id` argument in a function that required a string input, or did not return a Promise of type User, an error would be thrown and the code would not compile. This protects you from using functions and arguments in ways that they are not supposed to.
 - Promises are like an IOU in syncronous code. It allows the application to continue running while it waits for this action to complete. They are not complicated to grasp and will be easier to understand by example later on.
 
@@ -67,7 +67,7 @@ This line of code would show an error in your IDE if we did not define users to 
 
 ## Controllers
 
-Controllers allow frontend to access the backend through API endpoints. They never directly interact with the database but instead the service layer for that entity. It can access multiple services if necessary.
+Controllers allow the frontend to access the backend through API endpoints. They never directly interact with the database but instead the service layer for that entity. It can access multiple services if necessary.
 
 ```TypeScript
 @Controller('user')
@@ -138,9 +138,9 @@ export class CommentModule {}
 
 The above are examples of two module files with the appropriate members:
 
-1. Imports are only for importing other modules which export providers you need. You cannot import a provider, such as importing UserService or CommentService. The database has a way of inserting entities of a different type through the entity you are currently working with, so if you're in the UserService you can get all of the comments a user created, and vice versa. Thus, importing other modules is not common. Two common reasons to do this are for a universal logging module, a configuration module for storing and accessing app-wide settings, and an authentication module that lets controllers add decorators limiting access to specific users or user permissions.
+1. Imports are only for importing other modules which export providers you need. You cannot import a provider, such as importing UserService or CommentService. `TypeOrmModule.forFeature([])` is the most common module import as it is what injects the database connection into the service. When we get into database modeling we will find relations allow us access related entities (e.g., users own many comments, a comment owns one user) without needing to use the service layer of a different entity, so importing other entity modules is not necessary or desired. Outside of the database ORM, it's only typical to import modules that focus on a generalized feature that all other modules will need, e.g. an authentication module.
 2. Providers import services, as providers "provide" the functionality. Services are a generic name for many different kinds of files. For instance, a `user.scheduler.ts` file is not a service file and it could run user operations on a timer and would be considered a provider.
-3. Controllers are simply controllers, and there can be multiple controllers per module if it makes sense. For instance, if we had a `user.scheduler.ts` file that created timed functions, we could have a `user-scheduler.controller.ts` file that creates timed events through the API that we don't want to comingle with the regular user controller.
-4. Exports are providers we wish to export. It's undefined behavior, if not erroring behavior, to export a module or controler. A real-world example would be an `AuthModule` exporting an `AuthGuard` provider. Guards in NestJS are special decorators for controllers that allow or disallow entry based on some context. An AuthGuard would check if the user is logged in or not and only allow them if they were, and that is functionality that will need to be imported by many modules.
+3. Controllers are simply controllers, and there can be multiple controllers per module if it makes sense. For instance, if we had a `user.scheduler.ts` file that created timed functions, we could have a `user-scheduler.controller.ts` file that creates timed events through the API that we don't want to co-mingle with the regular user controller.
+4. Exports are providers we wish to export. A real-world example would be an `AuthModule` exporting an `AuthGuard` provider. Guards in NestJS are special decorators for controllers that allow or disallow entry based on some context. An AuthGuard would check if the user is logged in or not and only allow them if they were, and that is functionality that will need to be imported by many modules.
 
 Keep in mind modules do have one extra decorator, the `@Global()` decorator. Modules with this decorator only have to be imported once and are then available to **all** other modules, typically imported in the root application module. An authentication module is typically made global, but most aren't.
