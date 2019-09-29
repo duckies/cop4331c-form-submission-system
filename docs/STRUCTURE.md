@@ -9,12 +9,16 @@ The frontend and backend utilize frameworks that utilize a specialized project s
   - [Controllers](#controllers)
   - [Modules](#modules)
 - [Frontend Structure](#frontend-structure)
+  - [Vue.js](#vuejs)
+  - [NuxtJS Specific Architecture](#nuxtjs-specific-architecture)
+  - [Vuetify](#vuetify)
+  - [Vuex](#vuex)
 
 ## Backend Structure
 
-The backend utilizes NestJS ([documentation](https://docs.nestjs.com/)) to provide features and structure to an ExpressJS API. It is modeled after the [Angular Architecture](https://angular.io/guide/architecture) though where Angular is a frontend component, NestJS is a backend component. The two takeaways from this documentation is that the backend is modular and each module should contain all files for that module and that module alone.
+The backend utilizes [NestJS](https://docs.nestjs.com/) to provide features and structure to an ExpressJS API. It is modeled after the [Angular Architecture](https://angular.io/guide/architecture) though where Angular is a frontend framework, NestJS operates in the backend.
 
-- Modules: Self-contained blocks of code. They can import functionality exported from other modules. There is at least one module in every project, the root module, and is called `app.module.ts`.
+- Modules: Self-contained blocks of code. They can import functionality exported from other modules. There is at least one module in every project: the root module called `app.module.ts`.
 - Components: Classes that create the API endpoints and call upon services to perform specialized tasks. Components primarily deal with stitching together authentication and validators to send approved requests to services.
 - Services: Classes which broadly encompass any value, function, or feature that an app needs. Instead of performing application logic in components, services allow the application to remain DRY by creating reusable functions to perform specialized actions. Database functionality is on this layer.
 - Entities: Not a framework specific construct; entities are the backend representations of objects in the database. Entities are tighly coupled with the purpose of modules and are thus referenced here.
@@ -37,7 +41,7 @@ app.module.ts
 main.ts
 ```
 
-As seen, each folder typically represents the entity it encompasses. Each user will require functions necessary to perform C.R.U.D. (create, read, update, and destroy) actions upon users that are made in the service layer.
+Each folder will typically be named after the entity in which that module represents. Some modules may not represent entities but specialized functions, like authentication, and would be named as such.
 
 ## Services
 
@@ -60,12 +64,12 @@ export class UserService {
 There are a few important concepts to discuss here:
 
 - The `@Injectable()` and `@InjectRepository(User)` lines are called decorators, and are usually used in Controllers to "inject" functionality into the class. This service is made injectable in order to inject the user repository, which is what TypeORM will use to allow us to access the database for this particular entity. You cannot access any other entity using this repository, only user entities. This keeps the code DRY and specialized.
-- For those not familiar with TypeScript, the things after the colons are types not unlike Java types. It allows your IDE to know what the repository is supposed to be (a repository of type user), and that the `id` argument must be a number. If you try to use the `id` argument in a function that required a string input, or did not return a Promise of type User, an error would be thrown and the code would not compile. This protects you from using functions and arguments in ways that they are not supposed to.
+- For those not familiar with TypeScript, the things after the colons are types not unlike Java types. It allows your IDE to know what the repository is supposed to be (a repository of type user), and that the `id` argument must be a number. If you try to use the `id` argument in a function that required a string input, or did not return a Promise of type User, an error would be thrown and the code would not compile. This protects you from using functions and arguments in ways that they are not supposed to. They are optional and can be added later by group members familiar with TypeScript.
 - Promises are like an IOU in syncronous code. It allows the application to continue running while it waits for this action to complete. They are not complicated to grasp and will be easier to understand by example later on.
 
 The primary advantage of TypeScript cannot be seen looking at its code. However, if you were writing the above `findOne()` function, when you started to type this.repository, it would have shown you all of the methods you're allowed to use on user entities. Unlike regular intellisense you may have seen in other languages, this contextually is aware of the members of objects, so for instance:
 
-```
+```TypeScript
 return this.repository.find({ name: 'Bob' });
 ```
 
@@ -92,7 +96,7 @@ export class UserController {
 }
 ```
 
-The `@Controller('user')` decorator signifies that all API enpoints in this controller start with `/user`. So if our API were `api.forms.com`, we'd request user information from `api.forms.com/user`. Similarly, to find an individual user by id, we'd use `api.forms.com/user/1`. The `findOne` method in this example controller directly accesses the `findOne` method created in the service layer.
+The `@Controller('user')` decorator signifies that all API enpoints in this controller start with `/user`. So if our API were `example.com`, we'd request user information from `example.com/user`. Similarly, to find an individual user by id, we'd use `example.com/user/1`. The `findOne` method in this example controller directly accesses the `findOne` method created in the service layer.
 
 The `create()` method uses a specialized decorator called `@Body()`, it accepts JSON data to be sent along the request. Our application will utilize a validator across the entire application that checks these decorators for a DTO, or a data transfer object. The DTO may look something like this:
 
@@ -144,7 +148,7 @@ export class CommentModule {}
 
 The above are examples of two module files with the appropriate members:
 
-1. Imports are only for importing other modules which export providers you need. You cannot import a provider, such as importing UserService or CommentService. `TypeOrmModule.forFeature([])` is the most common module import as it is what injects the database connection into the service. When we get into database modeling we will find relations allow us access related entities (e.g., users own many comments, a comment owns one user) without needing to use the service layer of a different entity, so importing other entity modules is not necessary or desired. Outside of the database ORM, it's only typical to import modules that focus on a generalized feature that all other modules will need, e.g. an authentication module.
+1. **Imports** are only for importing other modules which export providers you need. You cannot import a provider, such as importing UserService or CommentService. `TypeOrmModule.forFeature([])` is the most common module import as it is what injects the database connection into the service. When we get into database modeling we will find relations allow us access related entities (e.g., users own many comments, a comment owns one user) without needing to use the service layer of a different entity, so importing other entity modules is not necessary or desired. Outside of the database ORM, it's only typical to import modules that focus on a generalized feature that all other modules will need, e.g. an authentication module.
 2. Providers import services, as providers "provide" the functionality. Services are a generic name for many different kinds of files. For instance, a `user.scheduler.ts` file is not a service file and it could run user operations on a timer and would be considered a provider.
 3. Controllers are simply controllers, and there can be multiple controllers per module if it makes sense. For instance, if we had a `user.scheduler.ts` file that created timed functions, we could have a `user-scheduler.controller.ts` file that creates timed events through the API that we don't want to co-mingle with the regular user controller.
 4. Exports are providers we wish to export. A real-world example would be an `AuthModule` exporting an `AuthGuard` provider. Guards in NestJS are special decorators for controllers that allow or disallow entry based on some context. An AuthGuard would check if the user is logged in or not and only allow them if they were, and that is functionality that will need to be imported by many modules.
@@ -157,7 +161,7 @@ The frontend utilizes [NuxtJS](https://nuxtjs.org/) on top of [Vue.js](https://v
 
 ### Vue.js
 
-NuxtJS is a framework that builds on Vue.js like how NestJS for the backend builds on Express.js. NestJS completely overrides how Express.js structurally and functionally operates in so many ways it's easy to not know that NestJS uses Express.js at all. NuxtJS on the other hand utilizes Vue in a much more vanilla way and applies most of its functionality on the compilation step and folder structure. One reason to choose Vue is because it's easy to digest when looking at it, but data binding and the different modifiers present in the HTML are topics much larger than this small introduction guide can handle.
+NuxtJS is a framework that builds on Vue.js like how NestJS for the backend builds on Express.js. NestJS completely overrides how Express.js structurally and functionally operates in so many ways it's easy to not know that NestJS uses Express.js at all. NuxtJS on the other hand utilizes Vue in a much more vanilla way and applies most of its functionality on the compilation step and folder structure. One reason to choose Vue is because it's easy to digest when looking at it, but data binding and the different modifiers present in the HTML are topics much larger than this small introduction guide can handle and should be researched elsewhere.
 
 To that end, learning NuxtJS is learning Vue with some structural caveats. Vue is a simple library that brings reactive components to the web that has a file structure as shown:
 
@@ -169,7 +173,7 @@ Modifiying `greeting` in the above image either programmatically or manually cau
 <form-generator :schema="formSchema">
 ```
 
-We can then also pass in a data object that we want to store answers to the form questions that it emit back to us. We call `:schema` and `:data` [props](https://vuejs.org/v2/guide/components-props.html), but can be thought of as arguments a function would take.
+We can then also pass in a data object that we want to store answers to the form questions that it will emit back to us. We call `:schema` and `:data` [props](https://vuejs.org/v2/guide/components-props.html), but can be thought of as arguments a function would take.
 
 ```HTML
 <form-generator :schema="formSchema" :data="formData">
@@ -212,7 +216,7 @@ export default class FormGenerator extends Vue {
 </script>
 ```
 
-The above example does not deal with data whatsoever, but if this `FormGenerator` component were passed an array of fields it would loop through the entire array of fields and dynamically render a component for the type desired. `v-for="field in schema"` is a looping operation that will repeat that tag and everything within it; it requires a `:key="field.id"` or some other unique identifier or Vue can get confused as it doesn't know if it's already rendered that specific component or not. All of our fields will come with unique ids, however some data does not have unique identifiers can the following could also be done: `v-for="(field, index) in schem" :key="index"`.
+The above example does not deal with data whatsoever, but if this `FormGenerator` component were passed an array of fields it would loop through the array and dynamically render a component for the type desired. `v-for="field in schema"` is a looping operation that will repeat that tag and everything within it; it requires a `:key="field.id"` or some other unique identifier or Vue can get confused as it doesn't know if it's already rendered that specific component or not. All of our fields will come with unique ids, however data that lacks identifiers can use: `v-for="(field, index) in schem" :key="index"`.
 
 The information in the script tag is mostly TypeScript jargon but also the `@Prop()` declarations for data it should receive. There are many ways of defining props, and one thing this component would need to be careful of is ensuring the schema data is a required property.
 
@@ -220,7 +224,7 @@ The information in the script tag is mostly TypeScript jargon but also the `@Pro
 
 ## NuxtJS Specific Architecture
 
-Standalone Vue.js could have a single component operate as a page layout with many components within it before reaching a page component, and a page component would have many specialized components unique to that page. NuxtJS tries to provide some structural support to Vue instead of a component heirarchical hell and does so through a `Layouts`, `Pages`, and `Components` directories. I will not go over the `Assets, Middleware, Plugins, and Static` directories as they have ample explanation at the link above and are not necessary to use for creating pages. The NuxtJS documentation is quite sufficient in explaining the [directory structure](https://nuxtjs.org/guide/directory-structure).
+Standalone Vue.js could have a single component operate as a page layout with many components within it before reaching a page component, and a page component would have many specialized components unique to that page. NuxtJS tries to provide some structural support to Vue instead of a component heirarchical hell and does so through a `Layouts`, `Pages`, and `Components` directories. I will not go over the `Assets, Middleware, Plugins, and Static` directories as they have ample explanation on the [NuxtJS docs](https://nuxtjs.org/guide/directory-structure) and are not necessary for page creation..
 
 The frontend is mostly comprised of the following, but keep in mind they are all components:
 
@@ -239,6 +243,8 @@ Some rather important components that Vuetify provides:
 - [Cards](https://vuetifyjs.com/en/components/cards): A versatile component that is essentially a blank panel that can be used for structure or design.
 - [Dialogs](https://vuetifyjs.com/en/components/dialogs): A popup menu asking the user a question or informing them of something. Likely needed for the admin panel.
 - [TextAreas](https://vuetifyjs.com/en/components/textarea): One of many form related input fields we will need. Has many utility features for displaying errors and validating input.
+
+With the library installed, there is no setup or special consideration needed in order to use them; they are injected automatically. Simply follow the documentation for the component you wish to use on the Vuetify website and write it in code.
 
 ## Vuex
 
