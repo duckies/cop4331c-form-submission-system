@@ -13,7 +13,7 @@ As this is a group project only group members are able to contribute to the proj
 2. Run `npm install` in the root directory to install dependencies.
 3. Copy the `ormconfig.example.json` file contents into a new file called `ormconfig.json` and modify it as discussed in the group to connect to our development database.
 4. Run `npm run frontend:watch` and `npm run backend:watch` in separate terminals in the root directory to start both frontend and backend development servers.
-5. VSCode users should install the ESLint, Vetur, and Prettier extensions. ESLint warns you if your code does not conform to our style guidelines. Vetur is mild intellisense for frontend Vue code. Prettier provides automatic code formatting capabilities. The first two should not need setup, but you may configure Prettier to automatically format your code on safe or when you right-click and hit `Format Document`.
+5. VSCode users should install the ESLint, Vetur, and Prettier extensions. ESLint warns you if your code does not conform to our style guidelines. Vetur is mild intellisense for frontend Vue code. Prettier provides automatic code formatting capabilities. The first two should not need setup, but you may configure Prettier to automatically format your code on save or when you right-click and hit `Format Document`.
 
 > The repository is structured as a monorepo and is maintained by the [Lerna](https://github.com/lerna/lerna) package. When a new library is added to the repository, `npm install` will need to ran once again in the **root** directory. Running `npm install` in the backend or frontend directories will work but may bloat the size of your repository.
 
