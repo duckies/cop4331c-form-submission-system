@@ -1,0 +1,30 @@
+name: Test CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installing dependencies and testing
+        run: |
+          npm install
+          npm run bootstrap
+          npm run test
+      - name: Getting code coverage
+        run: |
+          npm install -g codecov
+          codecov
+        env:
+          CODECOV_TOKEN: '1be4aaf8-fa5b-44d0-bfe2-17b876ba2cce'
+          CI: true
