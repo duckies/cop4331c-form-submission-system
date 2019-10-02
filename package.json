@@ -17,6 +17,10 @@
     "backend:watch": "cd backend && npm run start:dev",
     "backend:lint": "cd backend && npm run lint",
     "backend:test": "cd backend && npm run test",
+    "heroku:frontend": "npm run frontend:build && npm run frontend:start",
     "test": "lerna run test"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.0"
   }
 }
