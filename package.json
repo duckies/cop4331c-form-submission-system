@@ -22,7 +22,6 @@
     "test": "lerna run test"
   },
   "dependencies": {
-    "class-validator": "^0.10.1",
     "rimraf": "^3.0.0"
   }
 }
