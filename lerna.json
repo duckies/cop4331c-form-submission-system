@@ -1,4 +1,9 @@
 {
   "packages": ["frontend", "backend"],
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "command": {
+    "boostrap": {
+      "hoist": true
+    }
+  }
 }
