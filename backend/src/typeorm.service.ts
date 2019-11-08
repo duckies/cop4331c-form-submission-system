@@ -10,7 +10,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private readonly config: ConfigService, private readonly logger: LoggingService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    const connection = {
+    return {
       type: this.config.get('DATABASE_TYPE'),
       host: this.config.get('DATABASE_HOST'),
       port: this.config.getNumber('DATABASE_PORT'),
@@ -20,36 +20,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: ['backend/src/**/*.entity{.ts,.js}'],
       synchronize: this.config.getBoolean('DATABASE_SYNCHRONIZE'),
       ssl: this.config.getBoolean('DATABASE_SSL'),
-    };
-
-    if (!connection.type) {
-      this.logger.error('The database type was not provided in the database options.', null, true);
-    } else if (connection.type !== 'postgres' && connection.type !== 'mysql') {
-      this.logger.error(
-        `The database type ${connection.type} is not supported. Please only use 'postgres' for PostgreSQL or 'mysql' for MySQL.`,
-      );
-    }
-
-    if (!connection.host) {
-      this.logger.error('The host was not specified in the database options.', null, true);
-    }
-
-    if (!connection.port) {
-      this.logger.error('The port was not specified in the database options.', null, true);
-    }
-
-    if (!connection.username) {
-      this.logger.error('The username was not specified in the database options.', null, true);
-    }
-
-    if (!connection.password) {
-      this.logger.error('The password was not specified in the database options.', null, true);
-    }
-
-    if (!connection.database) {
-      this.logger.error('The database was not specified in the database options.', null, true);
-    }
-
-    return connection as PostgresConnectionOptions | MysqlConnectionOptions;
+    } as PostgresConnectionOptions | MysqlConnectionOptions;
   }
 }
