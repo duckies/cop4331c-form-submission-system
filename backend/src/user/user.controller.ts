@@ -8,11 +8,6 @@ import { JWTGuard } from '../auth/guards/jwt.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body('password') password: string): Promise<User> {
-    return this.userService.create(password);
-  }
-
   @UseGuards(JWTGuard)
   @Get('/me')
   getMe(@Usr() user: User): User {
