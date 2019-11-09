@@ -77,6 +77,7 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverage": true,
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   }

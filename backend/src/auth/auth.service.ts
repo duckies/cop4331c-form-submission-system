@@ -26,8 +26,6 @@ export class AuthService {
   async validateAdmin(id: number, password: string): Promise<User> {
     const user = await this.userService.findOne(id);
 
-    console.log(user);
-
     if (user && (await this.userService.compareHash(password, user.hash))) {
       return user;
     }
