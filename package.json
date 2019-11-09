@@ -17,6 +17,7 @@
     "backend:watch": "cd backend && npm run start:dev",
     "backend:lint": "cd backend && npm run lint",
     "backend:test": "cd backend && npm run test",
+    "console": "cd backend && ts-node -r tsconfig-paths/register src/console.ts",
     "heroku-postbuild": "cd frontend && npm run build",
     "heroku-webstart": "cd frontend && npm run start",
     "test": "lerna run test"
