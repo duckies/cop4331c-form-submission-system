@@ -45,19 +45,18 @@ describe('LoggingService', () => {
       expect(consoleOutput).toEqual(expectedOutput);
     });
 
-    // This test currently explodes on GitHub
-    // it('should exit if fatal', () => {
-    //   const consoleOutput = [];
-    //   const expectedOutput = [`${chalk.red.bold('[FATAL]')}: ${chalk.red('testing')}`, new Error()];
-    //   jest.spyOn(console, 'error').mockImplementation((message: string) => consoleOutput.push(message));
+    it('should exit if fatal', () => {
+      const consoleOutput = [];
+      const expectedOutput = [`${chalk.red.bold('[FATAL]')}: ${chalk.red('testing')}`, new Error()];
+      jest.spyOn(console, 'error').mockImplementation((message: string) => consoleOutput.push(message));
 
-    //   // We override this type as "process.exit(1)" never finishes, and
-    //   // the only other way around this is throwing an error.
-    //   const processSpy = (jest.spyOn(process, 'exit') as any).mockImplementation(() => {});
+      // We override this type as "process.exit(1)" never finishes, and
+      // the only other way around this is throwing an error.
+      const processSpy = (jest.spyOn(process, 'exit') as any).mockImplementation(() => {});
 
-    //   loggingService.error('testing', new Error(), true);
-    //   expect(processSpy).toBeCalled();
-    //   expect(consoleOutput).toEqual(expectedOutput);
-    // });
+      loggingService.error('testing', new Error(), true);
+      expect(processSpy).toBeCalled();
+      expect(consoleOutput).toEqual(expectedOutput);
+    });
   });
 });

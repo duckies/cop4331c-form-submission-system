@@ -19,6 +19,7 @@ jobs:
       - name: Installing dependencies and testing
         run: |
           npm install
+          cp config.env.example config.env
           npm run test
       - name: Getting code coverage
         run: |
