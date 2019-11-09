@@ -51,6 +51,8 @@ export class ConfigService {
       DATABASE_NAME: Joi.string().required(),
       DATABASE_SYNCHRONIZE: Joi.boolean(),
       DATABASE_SSL: Joi.boolean(),
+      TOKEN_EXPIRATION_HOURS: Joi.number().default(24),
+      TOKEN_SECRET: Joi.string().required(),
     });
 
     const { error, value: validatedEnvConfig } = envVarsSchema.validate(envConfig);

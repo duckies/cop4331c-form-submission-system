@@ -6,7 +6,7 @@ export class LoggingService {
    * @param message Message to display to the client in the console.
    */
   log(message: string): void {
-    console.log(`${chalk.cyan('[Log]')} + ${chalk.cyan(message)}`);
+    console.log(`${chalk.cyan('[Log]')} ${chalk.cyan(message)}`);
   }
 
   /**

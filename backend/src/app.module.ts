@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { LoggingModule } from './logging/logging.module';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { ConsoleModule } from 'nestjs-console';
 
 @Module({
   imports: [
-    LoggingModule,
-    ConfigModule,
+    ConsoleModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) =>
@@ -29,9 +29,11 @@ import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOpti
         } as PostgresConnectionOptions | MysqlConnectionOptions),
       inject: [ConfigService],
     }),
+    LoggingModule,
+    ConfigModule,
+    AuthModule,
+    UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {
   constructor(private readonly connection: Connection) {}
