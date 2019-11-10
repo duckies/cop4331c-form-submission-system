@@ -10,21 +10,23 @@ jobs:
       matrix:
         node-version: [12.x]
 
+    name: Node ${{ matrix.node }} Testing
+
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Installing dependencies and testing
-        run: |
-          npm install
-          # cp config.env.example config.env
-          npm run test
-      - name: Getting code coverage
-        run: |
-          npm install -g codecov
-          codecov
+        run: npm install
+
+      - name: Testing Application
+        run: npm run test
+
+      - name: Getting Coverage
+        run: npm install -g codecov && codecov
+
         env:
           CODECOV_TOKEN: '1be4aaf8-fa5b-44d0-bfe2-17b876ba2cce'
           CI: true
