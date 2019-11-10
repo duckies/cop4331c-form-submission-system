@@ -61,9 +61,10 @@ describe('ConfigService', () => {
       throw new Error();
     });
 
-    expect(() => {
+    const construction = () => {
       new ConfigService('bogus.env', loggingService);
-    }).toThrow();
+    };
+    expect(construction).toThrow();
   });
 
   it('should properly initialize a valid configuration', () => {
