@@ -9,6 +9,7 @@ import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOpti
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConsoleModule } from 'nestjs-console';
+import { FormModule } from './form/form.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ConsoleModule } from 'nestjs-console';
     ConfigModule,
     AuthModule,
     UserModule,
+    FormModule,
   ],
 })
 export class AppModule {
