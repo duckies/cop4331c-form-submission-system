@@ -17,6 +17,10 @@ describe('ConfigService', () => {
     loggingService = module.get<LoggingService>(LoggingService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return an error if the file cannot be found', () => {
     const consoleMessages = [];
 
