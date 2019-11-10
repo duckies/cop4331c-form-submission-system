@@ -79,6 +79,9 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "coveragePathIgnorePatterns": [
+      ".entity.ts"
+    ],
     "collectCoverage": true,
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"

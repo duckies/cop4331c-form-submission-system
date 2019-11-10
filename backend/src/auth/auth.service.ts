@@ -9,7 +9,7 @@ export class AuthService {
   constructor(private readonly userService: UserService, private readonly config: ConfigService) {}
 
   async createToken(user: User): Promise<{ expiresIn: number; token: string }> {
-    const expiresIn = this.config.getNumber('TOKEN_EXPIRATION_HOURS') * 3600;
+    const expiresIn = (this.config.get('TOKEN_EXPIRATION_HOURS') as number) * 3600;
     const secretOrKey = this.config.get('TOKEN_SECRET');
 
     return {

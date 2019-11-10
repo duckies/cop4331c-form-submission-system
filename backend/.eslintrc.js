@@ -18,5 +18,6 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*spec.ts'] }],
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
+    "@typescript-eslint/ban-ts-ignore": 'off'
   },
 };

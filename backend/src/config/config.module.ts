@@ -4,7 +4,14 @@ import { LoggingService } from '../logging/logging.service';
 
 @Global()
 @Module({
-  providers: [ConfigService, LoggingService],
+  providers: [
+    {
+      inject: [LoggingService],
+      provide: ConfigService,
+      useValue: new ConfigService(`${process.env.configPath || '../config.env'}`, new LoggingService()),
+    },
+    LoggingService,
+  ],
   exports: [ConfigService],
 })
 export class ConfigModule {}
