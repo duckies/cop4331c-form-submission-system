@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
 jest.mock('../logging/logging.service.ts');
+jest.mock('fs');
 
 describe('ConfigService', () => {
   let loggingService: LoggingService;
@@ -24,6 +25,11 @@ describe('ConfigService', () => {
   it('should return an error if the file cannot be found', () => {
     const consoleMessages = [];
 
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => {
+      const error = new Error();
+      Object.assign(error, { code: 'ENOENT' });
+      throw error;
+    });
     jest.spyOn(loggingService, 'error').mockImplementation((message: string) => consoleMessages.push(message));
 
     new ConfigService('bogus.env', loggingService);
@@ -31,21 +37,13 @@ describe('ConfigService', () => {
     expect(consoleMessages).toContain('The configuration file bogus.env was not found. Shutting down!');
   });
 
-  it('should handle validation errors', () => {
-    const consoleMessages = [];
-
-    jest.spyOn(loggingService, 'error').mockImplementation((message: string) => consoleMessages.push(message));
-
-    const configService = new ConfigService('bogus.env', loggingService);
-
-    // @ts-ignore This bypasses the private method nature.
-    configService.validateConfig({ EXAMPLE: 'testing' });
-
-    expect(consoleMessages).toContain('The configuration file bogus.env was not found. Shutting down!');
-  });
-
   it('should throw errors on invalid env configs', () => {
     const consoleMessages = [];
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => {
+      const error = new Error();
+      Object.assign(error, { code: 'ENOENT' });
+      throw error;
+    });
 
     jest.spyOn(loggingService, 'error').mockImplementation((message: string) => consoleMessages.push(message));
 
@@ -61,18 +59,15 @@ describe('ConfigService', () => {
   });
 
   // I cannot fix this no matter what. Look at later.
-  // it('should throw unknown errors if fs fails', () => {
-  //   const err = new Error();
-  //   jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
-  //     throw err;
-  //   });
+  it('should throw unknown errors if fs fails', () => {
+    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+      throw new Error();
+    });
 
-  //   try {
-  //     const configService = new ConfigService('bogus.env', loggingService);
-  //   } catch (error) {
-  //     expect(error).toBe(err);
-  //   }
-  // });
+    expect(() => {
+      new ConfigService('bogus.env', loggingService);
+    }).toThrow();
+  });
 
   it('should properly initialize a valid configuration', () => {
     const envConfig = {
