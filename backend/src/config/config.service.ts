@@ -1,10 +1,10 @@
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import { LoggingService } from '../logging/logging.service';
-import { Injectable } from '@nestjs/common';
-import Joi = require('@hapi/joi');
+import * as dotenv from 'dotenv'
+import * as fs from 'fs'
+import { LoggingService } from '../logging/logging.service'
+import { Injectable } from '@nestjs/common'
+import Joi = require('@hapi/joi')
 
-export type EnvConfig = Record<string, string>;
+export type EnvConfig = Record<string, string>
 
 /**
  * Maps a dotenv configuration file to a key:value record.
@@ -12,7 +12,7 @@ export type EnvConfig = Record<string, string>;
  */
 @Injectable()
 export class ConfigService {
-  private readonly envConfig: EnvConfig;
+  private readonly envConfig: EnvConfig
   public readonly envSchema: Joi.ObjectSchema = Joi.object({
     NODE_ENV: Joi.string()
       .valid('development', 'production', 'test')
@@ -30,19 +30,20 @@ export class ConfigService {
     DATABASE_SSL: Joi.boolean(),
     TOKEN_EXPIRATION_HOURS: Joi.number().default(24),
     TOKEN_SECRET: Joi.string().required(),
-  });
+  })
 
   constructor(filePath: string, private readonly logger: LoggingService) {
     try {
-      const config = dotenv.parse(fs.readFileSync(filePath));
-      this.envConfig = this.validateConfig(config);
+      const config = dotenv.parse(fs.readFileSync(filePath))
+      this.envConfig = this.validateConfig(config)
+      logger.log(JSON.stringify(this.envConfig))
     } catch (error) {
       // No such file or directory error code.
       if (error.code !== 'ENOENT') {
-        throw error;
+        throw error
       }
 
-      this.logger.error(`The configuration file ${filePath} was not found. Shutting down!`, null, true);
+      this.logger.error(`The configuration file ${filePath} was not found. Shutting down!`, null, true)
     }
   }
 
@@ -51,13 +52,13 @@ export class ConfigService {
    * @param envConfig Dotenv parsed configuration file.
    */
   private validateConfig(envConfig: EnvConfig): EnvConfig {
-    const { error, value: validatedEnvConfig } = this.envSchema.validate(envConfig);
+    const { error, value: validatedEnvConfig } = this.envSchema.validate(envConfig)
 
     if (error) {
-      this.logger.error(`Configuration validation error ${error.message}`, null, true);
+      this.logger.error(`Configuration validation error ${error.message}`, null, true)
     }
 
-    return validatedEnvConfig;
+    return validatedEnvConfig
   }
 
   /**
@@ -65,6 +66,6 @@ export class ConfigService {
    * @param key Case sensitive key
    */
   get(key: string): string | number | boolean {
-    return this.envConfig[key];
+    return this.envConfig[key]
   }
 }

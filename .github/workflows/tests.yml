@@ -40,5 +40,6 @@ jobs:
 
         env:
           DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+          CONFIG_PATH: '../testing.env'
           CODECOV_TOKEN: '1be4aaf8-fa5b-44d0-bfe2-17b876ba2cce'
           CI: true
