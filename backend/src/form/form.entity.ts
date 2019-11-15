@@ -1,5 +1,6 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from '../user/user.entity';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm'
+import { User } from '../user/user.entity'
+import { Question } from '../question/question.entity'
 
 @Entity()
 export class Form extends BaseEntity {
@@ -8,20 +9,19 @@ export class Form extends BaseEntity {
   // However, it means users can play with the url to find other forms.
   // We may want to switch to a hash.
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column({ unique: true })
-  title: string;
+  title: string
 
   @Column({ nullable: true })
-  description?: string;
+  description?: string
 
   @Column()
-  inactive: boolean;
+  inactive: boolean
 
-  // Requires Question module.
-  // @OneToMany(type => Question, question => question.form)
-  // questions: Question[];
+  @OneToMany(() => Question, (question) => question.form, { eager: true })
+  questions: Question[]
 
   // Requires Submission module.
   // @OneToMany(type => Submission, submission => submission.form)
@@ -29,6 +29,6 @@ export class Form extends BaseEntity {
 
   // Forms have one author.
   // If a user is deleted, the forms of theirs are also deleted.
-  @ManyToOne(() => User, user => user.forms, { onDelete: 'CASCADE' })
-  author: User;
+  @ManyToOne(() => User, (user) => user.forms, { onDelete: 'CASCADE' })
+  author: User
 }
