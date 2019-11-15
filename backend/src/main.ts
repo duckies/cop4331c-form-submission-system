@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { EntityNotFoundExceptionFilter, QueryFailedExceptionFilter } from './typeorm.filter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,13 @@ async function bootstrap(): Promise<void> {
       forbidNonWhitelisted: true,
     }),
   );
+
+  /**
+   * Transforms errors received by Postgres saying an entity was not found
+   * from a server error into a 404 error.
+   */
+  app.useGlobalFilters(new EntityNotFoundExceptionFilter());
+  app.useGlobalFilters(new QueryFailedExceptionFilter());
 
   await app.listen(process.env.PORT || 3000);
 }

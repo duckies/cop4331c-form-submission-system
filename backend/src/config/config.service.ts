@@ -13,11 +13,26 @@ export type EnvConfig = Record<string, string>;
 @Injectable()
 export class ConfigService {
   private readonly envConfig: EnvConfig;
+  public readonly envSchema: Joi.ObjectSchema = Joi.object({
+    NODE_ENV: Joi.string()
+      .valid('development', 'production', 'test')
+      .default('development'),
+    PORT: Joi.number().default(3000),
+    DATABASE_TYPE: Joi.string()
+      .valid('postgres', 'mysql')
+      .required(),
+    DATABASE_HOST: Joi.string().required(),
+    DATABASE_PORT: Joi.number().required(),
+    DATABASE_USERNAME: Joi.string().required(),
+    DATABASE_PASSWORD: Joi.string().required(),
+    DATABASE_NAME: Joi.string().required(),
+    DATABASE_SYNCHRONIZE: Joi.boolean(),
+    DATABASE_SSL: Joi.boolean(),
+    TOKEN_EXPIRATION_HOURS: Joi.number().default(24),
+    TOKEN_SECRET: Joi.string().required(),
+  });
 
-  constructor(private readonly logger: LoggingService) {
-    // We may want to make this customizable for swapping different configurations.
-    const filePath = `../config.env`;
-
+  constructor(filePath: string, private readonly logger: LoggingService) {
     try {
       const config = dotenv.parse(fs.readFileSync(filePath));
       this.envConfig = this.validateConfig(config);
@@ -36,26 +51,7 @@ export class ConfigService {
    * @param envConfig Dotenv parsed configuration file.
    */
   private validateConfig(envConfig: EnvConfig): EnvConfig {
-    const envVarsSchema: Joi.ObjectSchema = Joi.object({
-      NODE_ENV: Joi.string()
-        .valid('development', 'production', 'test')
-        .default('development'),
-      PORT: Joi.number().default(3000),
-      DATABASE_TYPE: Joi.string()
-        .valid('postgres', 'mysql')
-        .required(),
-      DATABASE_HOST: Joi.string().required(),
-      DATABASE_PORT: Joi.number().required(),
-      DATABASE_USERNAME: Joi.string().required(),
-      DATABASE_PASSWORD: Joi.string().required(),
-      DATABASE_NAME: Joi.string().required(),
-      DATABASE_SYNCHRONIZE: Joi.boolean(),
-      DATABASE_SSL: Joi.boolean(),
-      TOKEN_EXPIRATION_HOURS: Joi.number().default(24),
-      TOKEN_SECRET: Joi.string().required(),
-    });
-
-    const { error, value: validatedEnvConfig } = envVarsSchema.validate(envConfig);
+    const { error, value: validatedEnvConfig } = this.envSchema.validate(envConfig);
 
     if (error) {
       this.logger.error(`Configuration validation error ${error.message}`, null, true);
@@ -68,23 +64,7 @@ export class ConfigService {
    * Returns a value from a specified key.
    * @param key Case sensitive key
    */
-  get(key: string): string {
+  get(key: string): string | number | boolean {
     return this.envConfig[key];
-  }
-
-  /**
-   * Returns a boolean from a specified key.
-   * @param key Case sensitive key
-   */
-  getBoolean(key: string): boolean {
-    return Boolean(this.envConfig[key]);
-  }
-
-  /**
-   * Returns a numberfrom a specified key.
-   * @param key Case sensitive key
-   */
-  getNumber(key: string): number {
-    return Number(this.envConfig[key]);
   }
 }

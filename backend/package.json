@@ -13,7 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "test": "jest",
+    "test": "jest --ci --color --verbose",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -29,6 +29,8 @@
     "@types/bcrypt": "^3.0.0",
     "bcrypt": "^3.0.6",
     "chalk": "^2.4.2",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
     "commander": "^4.0.0",
     "dotenv": "8.2.0",
     "jsonwebtoken": "^8.5.1",
@@ -72,11 +74,15 @@
       "json",
       "ts"
     ],
+    "verbose": true,
     "rootDir": "src",
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "coveragePathIgnorePatterns": [
+      ".entity.ts"
+    ],
     "collectCoverage": true,
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"

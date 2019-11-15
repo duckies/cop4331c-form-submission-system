@@ -38,8 +38,8 @@ describe('AuthService', () => {
       user.hash = 'placeholder';
       user.lastUpdated = new Date();
 
-      jest.spyOn(configService, 'getNumber').mockReturnValue(24);
-      jest.spyOn(configService, 'get').mockReturnValue('secret');
+      jest.spyOn(configService, 'get').mockReturnValueOnce(24);
+      jest.spyOn(configService, 'get').mockReturnValueOnce('secret');
 
       expect(await authService.createToken(user)).toMatchObject({ expiresIn: 86400, token: 'placeholder' });
     });

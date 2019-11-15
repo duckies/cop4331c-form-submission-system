@@ -24,7 +24,7 @@ export class UserService {
    * Retrieves a user by their id.
    */
   findOne(id: number): Promise<User> {
-    return this.userRepository.findOne(id);
+    return this.userRepository.findOneOrFail(id);
   }
 
   /**
@@ -33,7 +33,7 @@ export class UserService {
    * @param password Plaintext new password.
    */
   async setPassword(password: string): Promise<User> {
-    const user = await this.findOne(1);
+    const user = await this.userRepository.findOneOrFail(1);
     const hash = await bcrypt.hash(password, this.saltRounds);
 
     user.hash = hash;
