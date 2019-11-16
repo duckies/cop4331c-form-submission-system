@@ -92,6 +92,7 @@ describe('ConfigService', () => {
       DATABASE_HOST: 'localhost',
       DATABASE_PORT: 3306,
       DATABASE_USERNAME: 'local',
+      DROP_SCHEMA: false,
       DATABASE_PASSWORD: 'local',
       DATABASE_NAME: 'localdb',
       DATABASE_SYNCHRONIZE: false,
