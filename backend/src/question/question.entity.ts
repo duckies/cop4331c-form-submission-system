@@ -1,5 +1,5 @@
-import { BaseEntity, PrimaryGeneratedColumn, Entity, Column, ManyToOne } from 'typeorm'
-import { Form } from '../form/form.entity'
+import { BaseEntity, PrimaryGeneratedColumn, Entity, Column, ManyToOne } from 'typeorm';
+import { Form } from '../form/form.entity';
 
 export enum FieldType {
   TextArea = 'TextArea',
@@ -13,46 +13,46 @@ export enum FieldType {
 @Entity()
 export class Question extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id: string;
 
   @Column()
-  title: string
+  title: string;
 
   @Column({ nullable: true })
-  label: string
+  label: string;
 
-  @Column({ unique: true })
-  order: number
+  @Column()
+  order: number;
 
   @Column({ type: 'enum', enum: FieldType })
-  type: FieldType
+  type: FieldType;
 
   @Column()
-  required: boolean
+  required: boolean;
 
   @Column('text', { nullable: true, array: true })
-  choices: string[]
+  choices: string[];
 
   @Column({ nullable: true })
-  multiple: boolean
+  multiple: boolean;
 
   @Column({ nullable: true })
-  fileMaxCount: number
+  fileMaxCount: number;
 
   // This should be changed to an enumerable
   // once the submission system is finished.
   @Column('text', { nullable: true, array: true })
-  fileTypes: string[]
+  fileTypes: string[];
 
   @Column({ nullable: true })
-  fileMaxSize: number
+  fileMaxSize: number;
 
   @Column()
-  deleted: boolean
+  deleted: boolean;
 
   @Column()
-  formId: number
+  formId: number;
 
   @ManyToOne(() => Form, (form) => form.questions, { onDelete: 'CASCADE' })
-  form: Form
+  form: Form;
 }

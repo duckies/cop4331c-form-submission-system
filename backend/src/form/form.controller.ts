@@ -1,11 +1,12 @@
-import { Body, Controller, Post, UseGuards, Get, Param, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JWTGuard } from '../auth/guards/jwt.guard';
 import { Usr } from '../user/user.decorator';
 import { User } from '../user/user.entity';
 import { CreateFormDto } from './dto/create-form.dto';
+import { FindFormDto } from './dto/find-form.dto';
+import { UpdateFormDto } from './dto/update-form.dto';
 import { Form } from './form.entity';
 import { FormService } from './form.service';
-import { UpdateFormDto } from './dto/update-form.dto';
 
 @Controller('/form')
 export class FormController {
@@ -18,19 +19,19 @@ export class FormController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Form> {
-    return this.formService.findOne(id);
+  findOne(@Param() findFormDto: FindFormDto): Promise<Form> {
+    return this.formService.findOne(findFormDto.id);
   }
 
   @UseGuards(JWTGuard)
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateFormDto: UpdateFormDto): Promise<Form> {
-    return this.formService.update(id, updateFormDto);
+  update(@Param() findFormDto: FindFormDto, @Body() updateFormDto: UpdateFormDto): Promise<Form> {
+    return this.formService.update(findFormDto.id, updateFormDto);
   }
 
   @UseGuards(JWTGuard)
   @Delete(':id')
-  delete(@Param('id') id: number): Promise<Form> {
-    return this.formService.delete(id);
+  delete(@Param() findFormDto: FindFormDto): Promise<Form> {
+    return this.formService.delete(findFormDto.id);
   }
 }

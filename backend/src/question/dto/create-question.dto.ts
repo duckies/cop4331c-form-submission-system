@@ -1,44 +1,44 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsBoolean, IsPositive } from 'class-validator'
-import { FieldType } from '../question.entity'
+import { IsString, IsNumber, IsOptional, IsEnum, IsBoolean, IsPositive } from 'class-validator';
+import { FieldType } from '../question.entity';
 
 export class CreateQuestionDto {
   @IsNumber()
-  formId: number
+  formId: number;
 
   @IsString()
-  title: string
+  title: string;
 
   @IsString()
   @IsOptional()
-  label: string
+  label: string;
 
   @IsNumber()
   @IsPositive()
-  order: number
+  order: number;
 
   @IsEnum(FieldType)
-  type: FieldType
+  type: FieldType;
 
   @IsBoolean()
-  required: boolean
+  required: boolean;
 
   @IsOptional()
   @IsString({ each: true })
-  choices: string[]
+  choices: string[];
 
   @IsOptional()
   @IsBoolean()
-  multiple: true
+  multiple: true;
 
   @IsOptional()
   @IsNumber()
-  fileMaxCount: number
+  fileMaxCount: number;
 
   @IsOptional()
   @IsString({ each: true })
-  fileTypes: string[]
+  fileTypes: string[];
 
   @IsOptional()
   @IsNumber()
-  fileMaxSize: number
+  fileMaxSize: number;
 }
