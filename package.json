@@ -17,10 +17,12 @@
     "backend:watch": "cd backend && npm run start:dev",
     "backend:lint": "cd backend && npm run lint",
     "backend:test": "cd backend && npm run test",
+    "typeorm": "ts-node --project backend/tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "console": "cd backend && ts-node -r tsconfig-paths/register src/console.ts",
     "heroku-postbuild": "cd frontend && npm run build",
     "heroku-webstart": "cd frontend && npm run start",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "test:e2e": "cd backend && npm run test:e2e"
   },
   "dependencies": {
     "rimraf": "3.0.0"

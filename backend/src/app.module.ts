@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConsoleModule } from 'nestjs-console';
 import { FormModule } from './form/form.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -27,6 +28,9 @@ import { FormModule } from './form/form.module';
           ssl: config.get('DATABASE_SSL'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: config.get('DATABASE_SYNCHRONIZE'),
+          dropSchema: config.get('DROP_SCHEMA'),
+          migrations: [__dirname + './../migrations/*{.ts,.js}'],
+          migrationsRun: true,
         } as PostgresConnectionOptions | MysqlConnectionOptions),
       inject: [ConfigService],
     }),
@@ -35,6 +39,7 @@ import { FormModule } from './form/form.module';
     AuthModule,
     UserModule,
     FormModule,
+    QuestionModule,
   ],
 })
 export class AppModule {

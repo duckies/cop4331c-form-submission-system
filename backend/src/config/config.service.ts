@@ -1,7 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { LoggingService } from '../logging/logging.service';
-import { Injectable } from '@nestjs/common';
 import Joi = require('@hapi/joi');
 
 export type EnvConfig = Record<string, string>;
@@ -28,6 +28,9 @@ export class ConfigService {
     DATABASE_NAME: Joi.string().required(),
     DATABASE_SYNCHRONIZE: Joi.boolean(),
     DATABASE_SSL: Joi.boolean(),
+    DROP_SCHEMA: Joi.boolean()
+      .optional()
+      .default(false),
     TOKEN_EXPIRATION_HOURS: Joi.number().default(24),
     TOKEN_SECRET: Joi.string().required(),
   });

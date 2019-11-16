@@ -6,6 +6,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: tester
+          POSTGRES_PASSWORD: tester
+          POSTGRES_DB: testing
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     strategy:
       matrix:
         node-version: [12.x]
@@ -21,12 +32,17 @@ jobs:
       - name: Installing Dependencies
         run: npm install
 
-      - name: Testing Application
+      - name: Running Unit Tests
         run: npm run test
+
+      - name: Running End-To-End Tests
+        run: npm run test:e2e
 
       - name: Getting Coverage
         run: npm install -g codecov && codecov
 
         env:
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+          CONFIG_PATH: '../testing.env'
           CODECOV_TOKEN: '1be4aaf8-fa5b-44d0-bfe2-17b876ba2cce'
           CI: true
