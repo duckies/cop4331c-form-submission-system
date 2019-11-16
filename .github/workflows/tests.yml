@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:11
         env:
           POSTGRES_USER: tester
           POSTGRES_PASSWORD: tester
