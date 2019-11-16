@@ -32,8 +32,11 @@ jobs:
       - name: Installing Dependencies
         run: npm install
 
-      - name: Testing Application
+      - name: Running Unit Tests
         run: npm run test
+
+      - name: Running End-To-End Tests
+        run: npm run test:e2e
 
       - name: Getting Coverage
         run: npm install -g codecov && codecov

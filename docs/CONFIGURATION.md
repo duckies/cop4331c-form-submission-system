@@ -12,6 +12,7 @@ DATABASE_PASSWORD = 'admin'
 DATABASE_NAME = 'formdb'
 DATABASE_SYNCHRONIZE = false
 DATABASE_SSL = true
+DROP_SCHEMA = false
 TOKEN_EXPIRATION_HOURS = 24
 TOKEN_SECRET = 'SomethingSuperSecrety$%^'
 ```
@@ -27,5 +28,6 @@ Please carefully read the explanations for each of the settings:
 - **DATABASE_NAME** the name of the database to store our data.
 - **DATABASE_SYNCHRONIZE** a dangerous setting that should be left disabled and can be withheld from the configuration file. This setting is used in development to automatically restructure the database as changes are made to the code. This may involve dropping and re-adding tables that can result in dramatic loss of data at the benefit of not having to patch the database manually.
 - **DATABASE_SSL** is to toggle if the backend should attempt database connections using SSL or not. Typically this should be disabled if the database is running on the same machine as the backend. Databases provided online will usually, and should be, encrypted using SSL and will require this setting.
+- **DROP_SCHEMA** optional command that purges all tables in the database when the connection is establed. This is used for end-to-end testing.
 - **TOKEN_EXPIRATION_HOURS** determins how long an authentication token will remain valid in hours. This setting can be ommited, and in doing so will default to a 24-hour token expiration time. As we use JWT tokens, it's not possible to invalidate all tokens without modifying the secret below, so we do not recommand setting this to an unreasonably high number in an attempt to make authentication permanent.
 - **TOKEN_SECRET** is a secret string only the client should know used to encrypt and decrypt the client's authentication token. Changing this token will immediately invalidate any currently authenticated devices of the client's.
