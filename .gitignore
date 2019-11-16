@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+e2e-coverage/
 ormconfig.json
 *.env
 !testing.env
