@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConsoleModule } from 'nestjs-console';
 import { Connection } from 'typeorm';
+import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { LoggingModule } from './logging/logging.module';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { ConsoleModule } from 'nestjs-console';
 import { FormModule } from './form/form.module';
+import { LoggingModule } from './logging/logging.module';
 import { QuestionModule } from './question/question.module';
+import { SubmissionModule } from './submission/submission.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -34,12 +36,14 @@ import { QuestionModule } from './question/question.module';
         } as PostgresConnectionOptions | MysqlConnectionOptions),
       inject: [ConfigService],
     }),
+    MulterModule.register(),
     LoggingModule,
     ConfigModule,
     AuthModule,
     UserModule,
     FormModule,
     QuestionModule,
+    SubmissionModule,
   ],
 })
 export class AppModule {

@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsBoolean, IsPositive } from 'class-validator';
-import { FieldType } from '../question.entity';
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import { FieldType, MimeTypes } from '../question.entity';
 
 export class CreateQuestionDto {
   @IsNumber()
@@ -35,10 +35,7 @@ export class CreateQuestionDto {
   fileMaxCount: number;
 
   @IsOptional()
-  @IsString({ each: true })
-  fileTypes: string[];
-
-  @IsOptional()
-  @IsNumber()
-  fileMaxSize: number;
+  @IsArray()
+  @IsEnum(MimeTypes, { each: true })
+  mimeTypes?: MimeTypes[];
 }

@@ -1,4 +1,4 @@
-import { BaseEntity, PrimaryGeneratedColumn, Entity, Column, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Form } from '../form/form.entity';
 
 export enum FieldType {
@@ -8,6 +8,16 @@ export enum FieldType {
   Radio = 'Radio',
   Dropdown = 'Dropdown',
   FileInput = 'FileInput',
+}
+
+export enum MimeTypes {
+  DOC = 'application/msword',
+  // We are limited to 63 bytes to store enum labels, so we truncate.
+  // "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  DOCX = 'application/vnd.openxmlformats-officedocument',
+  PDF = 'application/pdf',
+  TXT = 'text/plain',
+  ANY = 'any',
 }
 
 @Entity()
@@ -39,15 +49,10 @@ export class Question extends BaseEntity {
   @Column({ nullable: true })
   fileMaxCount: number;
 
-  // This should be changed to an enumerable
-  // once the submission system is finished.
-  @Column('text', { nullable: true, array: true })
-  fileTypes: string[];
+  @Column({ type: 'enum', enum: MimeTypes, nullable: true, array: true })
+  mimeTypes: MimeTypes[];
 
-  @Column({ nullable: true })
-  fileMaxSize: number;
-
-  @Column()
+  @Column({ select: false })
   deleted: boolean;
 
   @Column()
@@ -55,4 +60,7 @@ export class Question extends BaseEntity {
 
   @ManyToOne(() => Form, (form) => form.questions, { onDelete: 'CASCADE' })
   form: Form;
+
+  @UpdateDateColumn()
+  lastUpdated: Date;
 }

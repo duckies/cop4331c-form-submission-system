@@ -15,7 +15,10 @@ export class QuestionService {
    * @param createQuestionDto
    */
   async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    const orderExists = await this.questionRepository.findOne({ order: createQuestionDto.order });
+    const orderExists = await this.questionRepository.findOne({
+      formId: createQuestionDto.formId,
+      order: createQuestionDto.order,
+    });
 
     // To uncomplicate our queries, duplicate orders are not permitted.
     // Experiment not including this for performance benefits later on.
@@ -56,14 +59,19 @@ export class QuestionService {
       throw new BadRequestException(`'fileMaxCount' property was found but is not appropriate for a ${type} field.`);
     }
 
-    // FileTypes is only for FileInput fields.
-    if (typeof createQuestionDto.fileTypes !== 'undefined' && type !== FieldType.FileInput) {
-      throw new BadRequestException(`'fileTypes' property was found but is not appropriate for a ${type} field.`);
+    // FileMaxCount is required for FileInput fields.
+    if (typeof createQuestionDto.fileMaxCount === 'undefined' && type === FieldType.FileInput) {
+      throw new BadRequestException(`'fileMaxCount' property was not found and is required for a ${type} field.`);
     }
 
-    // FileMaxSize is only for FileInput fields.
-    if (typeof createQuestionDto.fileMaxSize !== 'undefined' && type !== FieldType.FileInput) {
-      throw new BadRequestException(`'fileMaxSize' property was found but is not appropriate for a ${type} field.`);
+    // MimeTypes is only for FileInput fields.
+    if (typeof createQuestionDto.mimeTypes !== 'undefined' && type !== FieldType.FileInput) {
+      throw new BadRequestException(`'mimeTypes' property was found but is not appropriate for a ${type} field.`);
+    }
+
+    // MimeTypes are required when dealing with FileInput fields.
+    if (typeof createQuestionDto.mimeTypes === 'undefined' && question.type === FieldType.FileInput) {
+      throw new BadRequestException(`'mimeTypes' property was not found and is required for a ${question.type} field.`);
     }
 
     // This is being saved in a relation by the required formId property.
@@ -79,11 +87,20 @@ export class QuestionService {
   }
 
   /**
-   * Retrieves all questions for a specific form/
+   * Retrieves all questions for a specific form.
    * @param id Question UUID.
    */
   findByForm(id: number): Promise<Question[]> {
     return this.questionRepository.find({ formId: id });
+  }
+
+  /**
+   * Retrieves all questions for a specified form of a specific type.
+   * @param id Form id.
+   * @param type FieldType of the questions to return.
+   */
+  findByFormAndType(id: number, type: FieldType): Promise<Question[]> {
+    return this.questionRepository.find({ formId: id, type });
   }
 
   /**
@@ -132,17 +149,10 @@ export class QuestionService {
       );
     }
 
-    // FileTypes is only for FileInput fields.
-    if (typeof updateQuestionDto.fileTypes !== 'undefined' && question.type !== FieldType.FileInput) {
+    // MimeTypes is only for FileInput fields.
+    if (typeof updateQuestionDto.mimeTypes !== 'undefined' && question.type !== FieldType.FileInput) {
       throw new BadRequestException(
-        `'fileTypes' property was found but is not appropriate for a ${question.type} field.`,
-      );
-    }
-
-    // FileMaxSize is only for FileInput fields.
-    if (typeof updateQuestionDto.fileMaxSize !== 'undefined' && question.type !== FieldType.FileInput) {
-      throw new BadRequestException(
-        `'fileMaxSize' property was found but is not appropriate for a ${question.type} field.`,
+        `'mimeTypes' property was found but is not appropriate for a ${question.type} field.`,
       );
     }
 
