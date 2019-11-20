@@ -5,7 +5,7 @@ import { UserService } from './user.service';
 @Injectable()
 @Console()
 export class UserConsole {
-  constructor(private readonly userService: UserService, private readonly consoleService: ConsoleService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Command({
     command: 'setpwd <password>',

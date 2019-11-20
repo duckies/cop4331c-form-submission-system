@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Query } from '@nestjs/common';
 import { JWTGuard } from '../auth/guards/jwt.guard';
 import { FindFormDto } from '../form/dto/find-form.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -6,6 +6,7 @@ import { FindQuestionDto } from './dto/find-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Question } from './question.entity';
 import { QuestionService } from './question.service';
+import { QuestionTypeDto } from './dto/find-question-type.dto';
 
 @Controller('/question')
 export class QuestionController {
@@ -25,6 +26,11 @@ export class QuestionController {
   @Get('/form/:id')
   findByForm(@Param() findFormDto: FindFormDto): Promise<Question[]> {
     return this.questionService.findByForm(findFormDto.id);
+  }
+
+  @Get('/type/:id')
+  findByFormAndType(@Param() findFormDto: FindFormDto, @Query() questionTypeDto: QuestionTypeDto): Promise<Question[]> {
+    return this.questionService.findByFormAndType(findFormDto.id, questionTypeDto.type);
   }
 
   @UseGuards(JWTGuard)

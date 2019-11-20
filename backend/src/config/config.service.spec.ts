@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 
 jest.mock('../logging/logging.service.ts');
 jest.mock('fs');
+jest.mock('dotenv');
 
 describe('ConfigService', () => {
   let loggingService: LoggingService;
@@ -23,91 +24,35 @@ describe('ConfigService', () => {
   });
 
   it('should return an error if the file cannot be found', () => {
-    const consoleMessages = [];
-
-    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => {
-      const error = new Error();
-      Object.assign(error, { code: 'ENOENT' });
-      throw error;
-    });
-    jest.spyOn(loggingService, 'error').mockImplementation((message: string) => consoleMessages.push(message));
-
-    new ConfigService('bogus.env', loggingService);
-
-    expect(consoleMessages).toContain('The configuration file bogus.env was not found. Shutting down!');
-  });
-
-  it('should throw errors on invalid env configs', () => {
-    const consoleMessages = [];
     jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => {
       const error = new Error();
       Object.assign(error, { code: 'ENOENT' });
       throw error;
     });
 
-    jest.spyOn(loggingService, 'error').mockImplementation((message: string) => consoleMessages.push(message));
+    const logger = jest.spyOn(loggingService, 'error').mockImplementation(() => {});
 
-    const configService = new ConfigService('bogus.env', loggingService);
+    new ConfigService(loggingService);
 
-    // @ts-ignore This bypasses the private method nature.
-    configService.validateConfig({ EXAMPLE: 'testing' });
-
-    expect(consoleMessages).toEqual([
-      'The configuration file bogus.env was not found. Shutting down!',
-      'Configuration validation error "DATABASE_TYPE" is required',
-    ]);
+    expect(logger).toBeCalledTimes(1);
   });
 
-  // I cannot fix this no matter what. Look at later.
-  it('should throw unknown errors if fs fails', () => {
-    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+  it('should throw unknown errors', () => {
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => {
       throw new Error();
     });
 
-    expect(() => {
-      new ConfigService('bogus.env', loggingService);
-    }).toThrow();
+    expect(() => new ConfigService(loggingService)).toThrow();
   });
 
-  it('should properly initialize a valid configuration', () => {
-    const envConfig = {
-      NODE_ENV: 'development',
-      PORT: '3000',
-      DATABASE_TYPE: 'postgres',
-      DATABASE_HOST: 'localhost',
-      DATABASE_PORT: '3306',
-      DATABASE_USERNAME: 'local',
-      DATABASE_PASSWORD: 'local',
-      DATABASE_NAME: 'localdb',
-      DATABASE_SYNCHRONIZE: 'false',
-      DATABASE_SSL: 'false',
-      TOKEN_EXPIRATION_HOURS: '24',
-      TOKEN_SECRET: 'secret',
-    };
+  it('should throw errors on invalid env configs', () => {
+    jest.spyOn(fs, 'readFileSync').mockResolvedValueOnce(null as never);
+    const loggerSpy = jest.spyOn(loggingService, 'error').mockImplementation(() => {});
 
-    const parsedConfig = {
-      NODE_ENV: 'development',
-      PORT: 3000,
-      DATABASE_TYPE: 'postgres',
-      DATABASE_HOST: 'localhost',
-      DATABASE_PORT: 3306,
-      DATABASE_USERNAME: 'local',
-      DROP_SCHEMA: false,
-      DATABASE_PASSWORD: 'local',
-      DATABASE_NAME: 'localdb',
-      DATABASE_SYNCHRONIZE: false,
-      DATABASE_SSL: false,
-      TOKEN_EXPIRATION_HOURS: 24,
-      TOKEN_SECRET: 'secret',
-    };
+    // @ts-ignore This bypasses the method being declared private.
+    new ConfigService(loggingService).validateConfig({ EXAMPLE: 'testing' });
 
-    jest.spyOn(fs, 'readFileSync').mockReturnValueOnce('empty');
-    jest.spyOn(dotenv, 'parse').mockReturnValueOnce(envConfig);
-
-    const configService = new ConfigService('bogus.env', loggingService);
-
-    // @ts-ignore
-    expect(configService.envConfig).toEqual(parsedConfig);
+    expect(loggerSpy).toBeCalledTimes(1);
   });
 
   it('should return keys on valid configuration', () => {
@@ -129,7 +74,7 @@ describe('ConfigService', () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValueOnce('empty');
     jest.spyOn(dotenv, 'parse').mockReturnValueOnce(envConfig);
 
-    const configService = new ConfigService('bogus.env', loggingService);
+    const configService = new ConfigService(loggingService);
 
     expect(configService.get('PORT')).toBe(3000);
     expect(configService.get('DATABASE_TYPE')).toBe('postgres');

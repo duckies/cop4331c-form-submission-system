@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '../app.module';
+import { AppModule } from '../src/app.module';
 
 describe('QuestionController (e2e)', () => {
   let app: INestApplication;
@@ -115,6 +115,47 @@ describe('QuestionController (e2e)', () => {
     ]);
   });
 
+  it('should should not allow creation of FileInput fields without fileMaxCount', async () => {
+    await request(app.getHttpServer())
+      .post('/question')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        formId: 1,
+        title: 'FileInput Title',
+        type: 'FileInput',
+        required: true,
+        order: 501,
+      })
+      .expect(400, {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: "'fileMaxCount' property was not found and is required for a FileInput field.",
+      });
+  });
+
+  it('should should not allow creation of FileInput fields without mimeTypes', async () => {
+    await request(app.getHttpServer())
+      .post('/question')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        formId: 1,
+        title: 'FileInput Title',
+        type: 'FileInput',
+        fileMaxCount: 1,
+        required: true,
+        order: 501,
+      })
+      .expect(400, {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: "'mimeTypes' property was not found and is required for a FileInput field.",
+      });
+  });
+
+  /**
+   * Update method.
+   */
+
   it('should update a question', async () => {
     const resp = await request(app.getHttpServer())
       .patch(`/question/${uuid}`)
@@ -193,5 +234,16 @@ describe('QuestionController (e2e)', () => {
     expect(resp.body).toMatchObject({
       order: 9,
     });
+  });
+
+  /**
+   * FindByFormAndType Method
+   */
+  it('should return an array of questions by form', async () => {
+    await request(app.getHttpServer())
+      .get('/question/type/1?type=TextArea')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .then((resp) => expect(Array.isArray(resp.body)));
   });
 });

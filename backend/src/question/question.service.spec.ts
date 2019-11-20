@@ -2,9 +2,9 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { FieldType, Question } from './question.entity';
-import { QuestionService } from './question.service';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { FieldType, MimeTypes, Question } from './question.entity';
+import { QuestionService } from './question.service';
 
 describe('QuestionService', () => {
   let questionService: QuestionService;
@@ -121,7 +121,7 @@ describe('QuestionService', () => {
   it('should throw when fileTypes is not appropriate', async () => {
     const dto = new CreateQuestionDto();
     dto.required = true;
-    dto.fileTypes = ['pdf'];
+    dto.mimeTypes = [MimeTypes.ANY];
     dto.type = FieldType.TextArea;
 
     jest.spyOn(questionRepository, 'findOne').mockResolvedValueOnce(undefined);
@@ -135,30 +135,7 @@ describe('QuestionService', () => {
       expect(error).toMatchObject({
         message: {
           statusCode: 400,
-          message: "'fileTypes' property was found but is not appropriate for a TextArea field.",
-        },
-      });
-    }
-  });
-
-  it('should throw when fileMaxSize is not appropriate', async () => {
-    const dto = new CreateQuestionDto();
-    dto.required = true;
-    dto.fileMaxSize = 10;
-    dto.type = FieldType.TextArea;
-
-    jest.spyOn(questionRepository, 'findOne').mockResolvedValueOnce(undefined);
-    jest.spyOn(questionRepository, 'merge').mockResolvedValueOnce(dto as never);
-
-    expect.assertions(1);
-
-    try {
-      await questionService.create(dto);
-    } catch (error) {
-      expect(error).toMatchObject({
-        message: {
-          statusCode: 400,
-          message: "'fileMaxSize' property was found but is not appropriate for a TextArea field.",
+          message: "'mimeTypes' property was found but is not appropriate for a TextArea field.",
         },
       });
     }
@@ -262,7 +239,7 @@ describe('QuestionService', () => {
     question.order = 1;
 
     const dto = new UpdateQuestionDto();
-    dto.fileTypes = ['pdf'];
+    dto.mimeTypes = [MimeTypes.ANY];
 
     jest.spyOn(questionRepository, 'merge').mockImplementation(() => null);
     jest.spyOn(questionRepository, 'findOneOrFail').mockImplementation(async () => question);
@@ -275,7 +252,7 @@ describe('QuestionService', () => {
       expect(error).toMatchObject({
         message: {
           statusCode: 400,
-          message: "'fileTypes' property was found but is not appropriate for a TextInput field.",
+          message: "'mimeTypes' property was found but is not appropriate for a TextInput field.",
         },
       });
     }
@@ -287,7 +264,7 @@ describe('QuestionService', () => {
     question.order = 1;
 
     const dto = new UpdateQuestionDto();
-    dto.fileMaxSize = 10;
+    dto.fileMaxCount = 10;
 
     jest.spyOn(questionRepository, 'merge').mockImplementation(() => null);
     jest.spyOn(questionRepository, 'findOneOrFail').mockImplementation(async () => question);
@@ -300,7 +277,7 @@ describe('QuestionService', () => {
       expect(error).toMatchObject({
         message: {
           statusCode: 400,
-          message: "'fileMaxSize' property was found but is not appropriate for a TextInput field.",
+          message: "'fileMaxCount' property was found but is not appropriate for a TextInput field.",
         },
       });
     }

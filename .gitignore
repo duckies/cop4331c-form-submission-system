@@ -1,5 +1,6 @@
 node_modules/
 dist/
+files/
 coverage/
 e2e-coverage/
 ormconfig.json

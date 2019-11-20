@@ -13,11 +13,11 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "test": "jest --ci --color --verbose",
+    "test": "jest --ci --color",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env CONFIG_PATH=../testing.env jest --config ./jest-e2e.json --ci --color --verbose"
+    "test:e2e": "cross-env CONFIG_PATH=../testing.env jest --config ./jest-e2e.json --ci --color -i"
   },
   "dependencies": {
     "@hapi/joi": "^16.1.7",
@@ -34,6 +34,7 @@
     "commander": "^4.0.0",
     "dotenv": "8.2.0",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.2",
     "nestjs-console": "^1.2.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",

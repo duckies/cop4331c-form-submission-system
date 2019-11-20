@@ -1,40 +1,38 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsPositive } from 'class-validator'
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import { MimeTypes } from '../question.entity';
 
 export class UpdateQuestionDto {
   @IsOptional()
   @IsString()
-  title?: string
+  title?: string;
 
   @IsOptional()
   @IsString()
-  label?: string
+  label?: string;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  order?: number
+  order?: number;
 
   @IsOptional()
   @IsBoolean()
-  required?: boolean
+  required?: boolean;
 
   @IsOptional()
   @IsString({ each: true })
-  choices?: string[]
+  choices?: string[];
 
   @IsOptional()
   @IsBoolean()
-  multiple?: true
+  multiple?: true;
 
   @IsOptional()
   @IsNumber()
-  fileMaxCount?: number
+  fileMaxCount?: number;
 
   @IsOptional()
-  @IsString({ each: true })
-  fileTypes?: string[]
-
-  @IsOptional()
-  @IsNumber()
-  fileMaxSize?: number
+  @IsArray()
+  @IsEnum(MimeTypes, { each: true })
+  mimeTypes?: MimeTypes[];
 }
