@@ -35,9 +35,11 @@ export class ConfigService {
     TOKEN_SECRET: Joi.string().required(),
   });
 
-  constructor(filePath: string, private readonly logger: LoggingService) {
+  constructor(private readonly logger: LoggingService) {
+    const configFile = process.env.CONFIG_PATH || '../config.env';
+
     try {
-      const config = dotenv.parse(fs.readFileSync(filePath));
+      const config = dotenv.parse(fs.readFileSync(configFile));
       this.envConfig = this.validateConfig(config);
     } catch (error) {
       // No such file or directory error code.
@@ -45,7 +47,7 @@ export class ConfigService {
         throw error;
       }
 
-      this.logger.error(`The configuration file ${filePath} was not found. Shutting down!`, null, true);
+      this.logger.error(`The configuration file ${configFile} was not found. Shutting down!`, null, true);
     }
   }
 

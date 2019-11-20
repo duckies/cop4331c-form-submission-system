@@ -1,17 +1,10 @@
-import { Module, Global } from '@nestjs/common'
-import { ConfigService } from './config.service'
-import { LoggingService } from '../logging/logging.service'
+import { Module, Global } from '@nestjs/common';
+import { ConfigService } from './config.service';
+import { LoggingService } from '../logging/logging.service';
 
 @Global()
 @Module({
-  providers: [
-    {
-      inject: [LoggingService],
-      provide: ConfigService,
-      useValue: new ConfigService(`${process.env.CONFIG_PATH || '../config.env'}`, new LoggingService()),
-    },
-    LoggingService,
-  ],
+  providers: [ConfigService, LoggingService],
   exports: [ConfigService],
 })
 export class ConfigModule {}
