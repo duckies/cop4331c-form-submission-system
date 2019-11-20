@@ -266,4 +266,47 @@ describe('SubmissionController (e2e)', () => {
         });
       });
   });
+
+  /**
+   * Multer interceptor specific tests.
+   */
+
+  it('should correctly upload .docx files, and reject otherwise', async () => {
+    let formId: number;
+    let uuid: string;
+
+    await request(app.getHttpServer())
+      .post(`/form`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Multer Test Form' })
+      .expect(201)
+      .then((resp) => (formId = resp.body.id));
+
+    await request(app.getHttpServer())
+      .post('/question')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        title: 'FileInput Question',
+        formId,
+        order: 1,
+        type: 'FileInput',
+        required: true,
+        fileMaxCount: 1,
+        mimeTypes: [MimeTypes.DOCX],
+      })
+      .expect(201)
+      .then((resp) => (uuid = resp.body.id));
+
+    await request(app.getHttpServer())
+      .post(`/submission/${formId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach(uuid, __dirname + '/fixtures/document.docx')
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/submission/${formId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach(uuid, __dirname + '/fixtures/document.pdf')
+      .expect(400);
+  });
 });
