@@ -50,4 +50,18 @@ describe('QuestionController (e2e)', () => {
         });
       });
   });
+
+  it('should throw an exception if the login fails', async () => {
+    await request(app.getHttpServer())
+      .post('/login')
+      .send({ id: 1, password: 'not-admin' })
+      .expect(401);
+  });
+
+  it('should throw an exception if the JWT is invalid', async () => {
+    await request(app.getHttpServer())
+      .get('/user/me')
+      .set('Authorization', `Bearer bogus.token`)
+      .expect(401);
+  });
 });
