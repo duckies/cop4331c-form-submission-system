@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '../app.module';
+import { AppModule } from '../src/app.module';
 
 describe('FormController (e2e)', () => {
   let app: INestApplication;
@@ -51,7 +51,7 @@ describe('FormController (e2e)', () => {
       .get(`/form/${id}`)
       .expect(200);
 
-    expect(resp.body).toEqual({
+    expect(resp.body).toMatchObject({
       id: id,
       inactive: false,
       questions: [],
@@ -71,7 +71,7 @@ describe('FormController (e2e)', () => {
       })
       .expect(200);
 
-    expect(resp.body).toEqual({
+    expect(resp.body).toMatchObject({
       id,
       inactive: true,
       questions: [],
@@ -86,7 +86,7 @@ describe('FormController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(resp.body).toEqual({
+    expect(resp.body).toMatchObject({
       inactive: true,
       questions: [],
       title: 'New Form Title',

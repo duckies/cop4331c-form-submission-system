@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FindFormDto } from '../form/dto/find-form.dto';
-import { FieldType } from '../question/question.entity';
+import { FieldType, Question } from '../question/question.entity';
 import { QuestionService } from '../question/question.service';
 import { AnswersDto } from './dto/create-submission.dto';
 import { Submission } from './submission.entity';
@@ -21,10 +21,10 @@ export class SubmissionService {
   async create(findFormDto: FindFormDto, files: Record<string, unknown>, answers: AnswersDto): Promise<Submission> {
     const data = await this.validateSubmission(findFormDto.id, answers, files);
 
-    console.log(files);
+    // console.log(files);
     console.log(answers);
 
-    console.log(data);
+    // console.log(data);
 
     return this.submissionRepository.save({ formId: findFormDto.id, answers: data });
   }
@@ -67,6 +67,11 @@ export class SubmissionService {
       throw new BadRequestException('There are no questions in this form.');
     }
 
+    // No blank submissions.
+    if (!answers || !files) {
+      throw new BadRequestException('The submitted form is empty.');
+    }
+
     for (const question of questions) {
       if (!this.hasProperty(files, question.id) && !this.hasProperty(answers, question.id)) {
         // Answer is missing for a required question.
@@ -84,7 +89,12 @@ export class SubmissionService {
       }
 
       if (this.isArrayOfStrings(answers[question.id])) {
-        let values = Array.from(answers[question.id]);
+        let values = [];
+        questions.forEach((q: Question) => {
+          if (q.choices) {
+            q.choices.forEach((c: string) => values.push(c));
+          }
+        });
 
         // Error if there are multiple values but aren't allowed to.
         // However, we should be able to have arrays of single strings, e.g., ["Apple"]
@@ -95,7 +105,9 @@ export class SubmissionService {
         // If we have multiple we inherently have choices (since we're not dealing with FileInput.)
         // Uses a buffer array to determine there are repeats inappropriately, e.g., ["Apple", "Apple"]
         for (const value of answers[question.id]) {
+          console.log(`${values} >? ${value}`);
           if (!values.includes(value)) {
+            console.log(`${values} does not include ${value}`);
             throw new BadRequestException(
               `Question '${question.id}' only allows the choices: {${question.choices}}. Be careful of duplicates.`,
             );
@@ -123,21 +135,12 @@ export class SubmissionService {
   }
 
   /**
-   * Determines if there are unique elements in some array by using the
-   * property that sets only store unique values.
-   * @param values Array of primitives.
-   */
-  hasDuplicates(values: unknown[]): boolean {
-    return new Set(values).size !== values.length;
-  }
-
-  /**
    * The objects returned by multer can be lacking prototypes,
    * thus we can use the parent Object prototype.
    * @param object
    * @param property
    */
   hasProperty(object: Record<string, unknown>, property: string): boolean {
-    return Object.prototype.hasOwnProperty.call(object, property);
+    return object && Object.prototype.hasOwnProperty.call(object, property);
   }
 }
