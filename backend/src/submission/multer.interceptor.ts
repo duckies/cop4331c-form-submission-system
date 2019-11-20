@@ -34,11 +34,6 @@ export function MulterInterceptor(): Type<NestInterceptor> {
         FieldType.FileInput,
       );
 
-      // Abort if we have no File Input questions.
-      if (!questions) {
-        return next.handle();
-      }
-
       // Rejects or approves the file based on the mimetype.
       // Multer will determine if the field exists before calling this function.
       const fileFilter = (req, file, cb): void => {
