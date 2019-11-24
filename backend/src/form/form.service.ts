@@ -24,10 +24,22 @@ export class FormService {
    * @param id Form id to lookup.
    */
   findOne(id: number): Promise<Form> {
-    return this.formRepository.findOneOrFail(id);
+    return this.formRepository
+      .createQueryBuilder('form')
+      .where('form.id = :id', { id })
+      .innerJoinAndSelect('form.questions', 'questions')
+      .orderBy({ 'questions.order': 'ASC' })
+      .getOne();
   }
 
-  // TODO: Pagination method for paginating forms if there are quite a lot of them.
+  /**
+   * Retrieves forms with pagination.
+   * @param take Number of forms to retrieve
+   * @param skip Numver of forms to skip over.
+   */
+  find(take: number, skip: number): Promise<Form[]> {
+    return this.formRepository.find({ take, skip, select: ['id', 'title'], loadRelationIds: true });
+  }
 
   /**
    * Modifies a form's attributes.

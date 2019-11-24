@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Query } from '@nestjs/common';
 import { JWTGuard } from '../auth/guards/jwt.guard';
 import { Usr } from '../user/user.decorator';
 import { User } from '../user/user.entity';
@@ -7,6 +7,7 @@ import { FindFormDto } from './dto/find-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 import { Form } from './form.entity';
 import { FormService } from './form.service';
+import { FindFormsDto } from './dto/find-forms.dto';
 
 @Controller('/form')
 export class FormController {
@@ -21,6 +22,12 @@ export class FormController {
   @Get(':id')
   findOne(@Param() findFormDto: FindFormDto): Promise<Form> {
     return this.formService.findOne(findFormDto.id);
+  }
+
+  @UseGuards(JWTGuard)
+  @Get()
+  find(@Query() findFormsDto: FindFormsDto): Promise<Form[]> {
+    return this.formService.find(findFormsDto.take, findFormsDto.skip);
   }
 
   @UseGuards(JWTGuard)
