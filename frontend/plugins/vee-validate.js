@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { extend } from 'vee-validate'
-import { required, min_value, mimes } from 'vee-validate/dist/rules'
+import { mimes, min_value, required } from 'vee-validate/dist/rules'
 
 extend('required', {
   ...required,
@@ -15,4 +15,14 @@ extend('min_value_create', {
 extend('mimes', {
   ...mimes,
   message: 'That file type is not allowed.'
+})
+
+extend('maxFiles', {
+  validate(value, arg) {
+    if (value.length <= arg[0]) {
+      return true
+    }
+
+    return `The maximum number of uploadable files is ${arg[0]}.`
+  }
 })

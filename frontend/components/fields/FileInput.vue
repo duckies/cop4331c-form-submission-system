@@ -74,19 +74,20 @@
       </v-list>
     </div>
 
-    <v-file-input
-      v-model="data"
-      v-else
-      :name="question.id"
-      :label="question.label"
-      :hint="types"
-      :required="question.required"
-      :multiple="question.multiple"
-      :error-messages="errors"
-      persistent-hint
-      counter
-      filled
-    />
+    <div v-else>
+      <p>{{ types }}</p>
+      <v-file-input
+        v-model="data"
+        :name="question.id"
+        :label="question.label"
+        :required="question.required"
+        :multiple="question.multiple"
+        :error-messages="errors"
+        persistent-hint
+        counter
+        filled
+      />
+    </div>
   </div>
 </template>
 

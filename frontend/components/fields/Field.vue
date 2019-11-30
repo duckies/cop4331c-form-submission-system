@@ -220,7 +220,8 @@ export default {
     rules() {
       return {
         required: this.question.required || false,
-        mimes: this.question.mimeTypes ? this.mimes : false
+        mimes: this.question.mimeTypes ? this.mimes : false,
+        maxFiles: this.question.fileMaxCount || false
       }
     },
     formLoading() {

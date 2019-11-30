@@ -2,8 +2,8 @@
   <v-container>
     <v-row>
       <v-col>
-        <h1>{{ form.title }}</h1>
-        <p v-if="form.description">
+        <h1 class="transition-fadeIn">{{ form.title }}</h1>
+        <p v-if="form.description" class="transition-fadeIn">
           {{ form.description }}
         </p>
       </v-col>
@@ -40,6 +40,9 @@ export default {
     form() {
       return this.$store.state.form.form
     },
+    formError() {
+      return this.$store.state.form.error
+    },
     questions() {
       return this.$store.state.form.form.questions.filter(
         (q) => q.deleted === false
@@ -61,7 +64,26 @@ export default {
   methods: {
     async submit() {
       await this.$store.dispatch('form/submitForm', this.form.id)
+
+      if (!this.formError) {
+        this.$router.push({ path: 'success' })
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.transition-fadeIn {
+  animation: fadeIn 700ms ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>

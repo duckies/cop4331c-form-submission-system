@@ -165,32 +165,36 @@
     <v-row>
       <v-col>
         <h1 style="display: inline-block;">{{ form.title }}</h1>
-        <p v-if="form.description">form.description</p>
+        <p v-if="form.description">{{ form.description }}</p>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
         <v-toolbar>
-          <v-toolbar-title>
+          <v-toolbar-title class="d-none d-md-flex">
             Form Management
           </v-toolbar-title>
 
-          <v-spacer />
+          <v-spacer class="d-none d-md-flex" />
 
-          <v-toolbar-items>
+          <v-toolbar-items
+            v-bind:class="{ 'justify-toolbar': $vuetify.breakpoint.smAndDown }"
+          >
+            <v-btn @click="createDialog = true" text>Add Question</v-btn>
+            <v-btn @click="setupEditForm" text>Edit Form</v-btn>
             <v-btn
               :to="{
                 name: 'form-id',
                 params: { id: form.id }
               }"
+              target="_blank"
               nuxt
+              color="info"
               text
             >
               Public URL
             </v-btn>
-            <v-btn @click="createDialog = true" text>Add Question</v-btn>
-            <v-btn @click="setupEditForm" text>Edit Form</v-btn>
           </v-toolbar-items>
         </v-toolbar>
       </v-col>
@@ -419,3 +423,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.justify-toolbar {
+  justify-content: center;
+  flex-grow: 1;
+}
+</style>

@@ -191,7 +191,7 @@
                       </v-list-item>
                       <v-list-item
                         :to="{
-                          name: 'admin-form-edit-id',
+                          name: 'admin-form-id-edit',
                           params: { id: form.id }
                         }"
                         target="_blank"

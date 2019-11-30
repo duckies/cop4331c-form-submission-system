@@ -1,14 +1,52 @@
 <template>
   <v-app>
+    <v-navigation-drawer v-model="drawer" absolute temporary app>
+      <v-list nav>
+        <v-list-item
+          v-for="tab in tabs"
+          :key="tab.text"
+          :to="tab.to"
+          nuxt
+          link
+          exact
+        >
+          <v-list-item-icon>
+            <v-icon v-text="tab.icon" />
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ tab.text }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn @click="$auth.logout()" block>Logout</v-btn>
+        </div>
+      </template>
+    </v-navigation-drawer>
+
     <v-app-bar app elevate-on-scroll class="header" dark>
-      <nuxt-link nuxt to="/admin" active-class="bogus" class="page-title">
-        <v-toolbar-title>Form Submission System</v-toolbar-title>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+
+      <nuxt-link nuxt to="/admin" class="page-title">
+        <v-toolbar-title class="primary--text"
+          >Form Submission System</v-toolbar-title
+        >
       </nuxt-link>
 
       <v-spacer></v-spacer>
+
+      <v-tabs class="d-none d-md-flex">
+        <v-tab v-for="tab in tabs" :key="tab.name" :to="tab.to" exact nuxt>
+          {{ tab.text }}
+        </v-tab>
+      </v-tabs>
+
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn v-on="on" text>
+          <v-btn v-on="on" text class="d-none d-md-flex">
             Admin <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
         </template>
@@ -19,27 +57,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-
-      <template v-slot:extension v-if="$route.params.id">
-        <v-tabs align-with-title class="extension">
-          <v-tab
-            :to="{
-              name: 'admin-form-id-edit',
-              params: { id: $route.params.id }
-            }"
-            nuxt
-            >Questions</v-tab
-          >
-          <v-tab
-            :to="{
-              name: 'admin-form-id-submissions',
-              params: { id: $route.params.id }
-            }"
-            nuxt
-            >Responses</v-tab
-          >
-        </v-tabs>
-      </template>
     </v-app-bar>
 
     <v-content>
@@ -56,6 +73,47 @@ export default {
       drawer: false,
       title: 'Admin Panel'
     }
+  },
+  computed: {
+    tabs() {
+      return [
+        {
+          text: 'Home',
+          to: {
+            name: 'admin'
+          },
+          show: true,
+          icon: 'mdi-home'
+        },
+        {
+          text: 'Form',
+          to: {
+            name: 'admin-form-id-edit',
+            params: { id: this.$route.params.id }
+          },
+          show: this.$route.params.id,
+          icon: 'mdi-help'
+        },
+        {
+          text: 'Submissions',
+          to: {
+            name: 'admin-form-id-submissions',
+            params: { id: this.$route.params.id }
+          },
+          show: this.$route.params.id,
+          icon: 'mdi-folder'
+        },
+        {
+          text: 'Submission',
+          to: {
+            name: 'admin-form-id-submission-sub',
+            params: { id: this.$route.params.id, sub: this.$route.params.sub }
+          },
+          show: this.$route.params.sub,
+          icon: 'mdi-folder-account'
+        }
+      ].filter((tab) => tab.show !== undefined)
+    }
   }
 }
 </script>
@@ -65,6 +123,8 @@ export default {
   color: #fff;
   text-decoration: none;
   text-transform: uppercase;
-  font-family: 'Roboto Mono', monospace;
+  font-family: Roboto, sans-serif;
+  font-weight: bold;
+  margin-right: 20px;
 }
 </style>
