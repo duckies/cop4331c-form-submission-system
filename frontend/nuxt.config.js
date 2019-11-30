@@ -59,8 +59,8 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    host: '167.172.193.164',
-    port: 3000
+    host: process.env.BACKEND_HOST,
+    port: process.env.BACKEND_PORT
   },
 
   auth: {
