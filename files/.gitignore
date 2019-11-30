@@ -1,0 +1,6 @@
+# The backend may lack permissions necessary to create this folder,
+# so this gitIgnore is created to ignore anything inside this folder
+# which allows it to be committed, but nothing within.
+*
+*/
+!.gitignore
