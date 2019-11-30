@@ -107,6 +107,7 @@ export default {
    ** Build configuration
    */
   build: {
+    cache: true,
     extractCSS: true,
     transpile: ['vee-validate/dist/rules'],
     /*
