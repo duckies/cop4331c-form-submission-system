@@ -26,12 +26,12 @@ export class ConfigService {
     DATABASE_TYPE: Joi.string()
       .valid('postgres', 'mysql')
       .required(),
-    DATABASE_HOST: Joi.string().required(),
+    DATABASE_HOST: Joi.string().default('localhost'),
     DATABASE_PORT: Joi.number().required(),
     DATABASE_USERNAME: Joi.string().required(),
     DATABASE_PASSWORD: Joi.string().required(),
     DATABASE_NAME: Joi.string().required(),
-    DATABASE_SYNCHRONIZE: Joi.boolean(),
+    DATABASE_SYNCHRONIZE: Joi.boolean().default(false),
     DATABASE_SSL: Joi.boolean(),
     DROP_SCHEMA: Joi.boolean()
       .optional()

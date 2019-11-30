@@ -26,12 +26,12 @@ The frontend and backend both require ports reachable from the internet for othe
 
 It's recommended to use Nginx to setup reverse proxies for better performance, easier customization, and security through SSL. View the [recommend nginx configuration](https://nuxtjs.org/faq/nginx-proxy/) for the frontend if Nginx is employed.
 
-A barebones installation would involve setting the `BACKEND_PORT` to your ip address, and port-forwarding ports `3000` and `3030`. Then you could access the website from `http://your-ip-address:3000`.
+A barebones installation would involve setting the `BACKEND_PORT` to your ip address, and port-forwarding ports `3000` and `3030`. Then you could access the website from `http://your-ip-address:3000`. The default port and host values default in such a way that the application can run on localhost, but file previews will not work.
 
 - **FRONTEND_PORT** is an optional setting to change the default frontend port to something other than `3030`.
 - **FRONTEND_HOST** is an optional setting to change the default host resolving address from localhost, it is unlikely this ever needs to be changed.
 - **BACKEND_PORT** is an optional setting to change the default backend port to something other than `3000`.
-- **BACKEND_HOST** is the ip or domain to reach the backend on, do not include the `http://` or any ending slashes, e.g. `duckie.cc` or `12.345.67.89`. This is localhost by default, but this will not work in a production environment.
+- **BACKEND_HOST** is the ip or domain to reach the backend on, do not include the `http://` or any ending slashes, e.g. `duckie.cc` or `12.345.67.89`. This is the address the frontend will use on client browsers to communicate with the backend.
 - **BACKEND_HTTPS** deligates to the frontend that the backend must be reached using SSL encryption, do not enable this if SSL is not enabled on the backend.
 
 ## Database Settings
@@ -39,7 +39,7 @@ A barebones installation would involve setting the `BACKEND_PORT` to your ip add
 These are required settings to establish proper database connectivity and authentication.
 
 - **DATABASE_TYPE** should be set to either `postgres` or `mysql` depending on the type of database provided.
-- **DATABASE_HOST** should be the ip or domain of the database to connect to.
+- **DATABASE_HOST** should be the ip or domain of the database to connect to, defaults to localhost.
 - **DATABASE_PORT** the open port for the database to communicate with.
 - **DATABASE_USERNAME** the username for the account granting the system access to the database.
 - **DATABASE_PASSWORD** the password for the database account.
@@ -51,7 +51,7 @@ These are required settings to establish proper database connectivity and authen
 These augment how the JWT tokens are generated and how long they last before expiring.
 
 - **TOKEN_EXPIRATION_HOURS** determins how long an authentication token will remain valid in hours. This setting can be ommited, and in doing so will default to a 24-hour token expiration time. As we use JWT tokens, it's not possible to invalidate all tokens without modifying the secret below, so we do not recommand setting this to an unreasonably high number in an attempt to make authentication permanent.
-- **TOKEN_SECRET** is a secret string only the client should know used to encrypt and decrypt the client's authentication token. Changing this token will immediately invalidate any currently authenticated devices of the client's.
+- **TOKEN_SECRET** is a required secret string only the client should know used to encrypt and decrypt the client's authentication token. Changing this token will immediately invalidate any currently authenticated devices of the client's.
 
 ## Development Settings
 
