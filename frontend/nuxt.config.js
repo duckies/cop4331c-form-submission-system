@@ -30,10 +30,6 @@ export default {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css?family=Roboto+Mono:400,700&display=swap'
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Khand:700&display=swap'
       }
     ]
   },

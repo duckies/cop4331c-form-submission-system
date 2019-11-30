@@ -147,6 +147,9 @@
           Edit
         </v-btn>
         <v-btn @click="deleteDialog = true" text>Delete</v-btn>
+        <v-btn class="handle" icon>
+          <v-icon>mdi-drag-variant</v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </div>

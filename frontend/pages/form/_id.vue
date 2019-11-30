@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <h1 class="transition-fadeIn">{{ form.title }}</h1>
+        <h1>{{ form.title }}</h1>
         <p v-if="form.description" class="transition-fadeIn">
           {{ form.description }}
         </p>
@@ -72,18 +72,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.transition-fadeIn {
-  animation: fadeIn 700ms ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0.1;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>

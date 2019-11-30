@@ -164,7 +164,7 @@
 
     <v-row>
       <v-col>
-        <h1 style="display: inline-block;">{{ form.title }}</h1>
+        <h1>{{ form.title }}</h1>
         <p v-if="form.description">{{ form.description }}</p>
       </v-col>
     </v-row>
@@ -202,7 +202,11 @@
 
     <v-row>
       <v-col>
-        <draggable v-model="questions" @change="updateQuestionOrder">
+        <draggable
+          v-model="questions"
+          @change="updateQuestionOrder"
+          handle=".handle"
+        >
           <transition-group>
             <field
               v-for="formQuestion in questions"

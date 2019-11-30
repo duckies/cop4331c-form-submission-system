@@ -3,6 +3,12 @@
     <v-row>
       <v-col>
         <h1>{{ form.title }}</h1>
+        <p>{{ form.description }}</p>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
         <field
           v-for="question in form.questions"
           :key="question.id"
