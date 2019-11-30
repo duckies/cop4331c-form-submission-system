@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Query, Delete } from '@nestjs/common';
 import { JWTGuard } from '../auth/guards/jwt.guard';
 import { FindFormDto } from '../form/dto/find-form.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -7,6 +7,7 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Question } from './question.entity';
 import { QuestionService } from './question.service';
 import { QuestionTypeDto } from './dto/find-question-type.dto';
+import { ReorderQuestionDto } from './dto/reorder-question.dto';
 
 @Controller('/question')
 export class QuestionController {
@@ -34,8 +35,20 @@ export class QuestionController {
   }
 
   @UseGuards(JWTGuard)
+  @Patch('/reorder')
+  reorder(@Body() reorderQuestionDto: ReorderQuestionDto): Promise<void[]> {
+    return this.questionService.reorder(reorderQuestionDto);
+  }
+
+  @UseGuards(JWTGuard)
   @Patch(':id')
   update(@Param() findQuestionDto: FindQuestionDto, @Body() updateQuestionDto: UpdateQuestionDto): Promise<Question> {
     return this.questionService.update(findQuestionDto.id, updateQuestionDto);
+  }
+
+  @UseGuards(JWTGuard)
+  @Delete(':id')
+  delete(@Param() findQuestionDto: FindQuestionDto): Promise<Question> {
+    return this.questionService.delete(findQuestionDto.id);
   }
 }

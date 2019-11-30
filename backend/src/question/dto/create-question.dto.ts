@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { FieldType, MimeTypes } from '../question.entity';
 
 export class CreateQuestionDto {
@@ -13,7 +13,6 @@ export class CreateQuestionDto {
   label: string;
 
   @IsNumber()
-  @IsPositive()
   order: number;
 
   @IsEnum(FieldType)

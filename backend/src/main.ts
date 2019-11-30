@@ -1,10 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import { AppModule } from './app.module';
 import { EntityNotFoundExceptionFilter, QueryFailedExceptionFilter } from './typeorm.filter';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   /**
    * Whitelist all arguments so they must be described in a DTO.
@@ -29,6 +31,11 @@ async function bootstrap(): Promise<void> {
    * Allows for communication from another domain or port.
    */
   app.enableCors();
+
+  /**
+   * Host the uploaded files.
+   */
+  app.useStaticAssets(join(__dirname, '../../..', 'files'));
 
   await app.listen(process.env.PORT || 3000);
 }

@@ -1,0 +1,12 @@
+.theme--dark.v-sheet {
+  background-color: #212121 !important;
+}
+
+.header .theme--dark.v-tabs > .v-tabs-bar {
+  background-color: #9575cd;
+}
+
+// The scrollbar is forced by default in Vuetify.
+html {
+  overflow-y: auto !important;
+}

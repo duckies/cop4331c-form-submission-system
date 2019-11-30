@@ -27,7 +27,7 @@ export class FormService {
     return this.formRepository
       .createQueryBuilder('form')
       .where('form.id = :id', { id })
-      .innerJoinAndSelect('form.questions', 'questions')
+      .leftJoinAndSelect('form.questions', 'questions')
       .orderBy({ 'questions.order': 'ASC' })
       .getOne();
   }
@@ -38,7 +38,12 @@ export class FormService {
    * @param skip Numver of forms to skip over.
    */
   find(take: number, skip: number): Promise<Form[]> {
-    return this.formRepository.find({ take, skip, select: ['id', 'title'], loadRelationIds: true });
+    return this.formRepository.find({
+      take,
+      skip,
+      select: ['id', 'title', 'lastUpdated', 'createdOn'],
+      loadRelationIds: true,
+    });
   }
 
   /**

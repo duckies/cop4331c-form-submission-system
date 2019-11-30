@@ -52,13 +52,16 @@ export class Question extends BaseEntity {
   @Column({ type: 'enum', enum: MimeTypes, nullable: true, array: true })
   mimeTypes: MimeTypes[];
 
-  @Column({ select: false })
+  @Column()
   deleted: boolean;
 
   @Column()
   formId: number;
 
-  @ManyToOne(() => Form, (form) => form.questions, { onDelete: 'CASCADE' })
+  @Column({ default: false })
+  answered: boolean;
+
+  @ManyToOne(() => Form, form => form.questions, { onDelete: 'CASCADE' })
   form: Form;
 
   @UpdateDateColumn()

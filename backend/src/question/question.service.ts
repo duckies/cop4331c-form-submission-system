@@ -1,9 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question, FieldType } from './question.entity';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { ReorderQuestionDto } from './dto/reorder-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { FieldType, Question } from './question.entity';
 
 @Injectable()
 export class QuestionService {
@@ -15,17 +16,6 @@ export class QuestionService {
    * @param createQuestionDto
    */
   async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    const orderExists = await this.questionRepository.findOne({
-      formId: createQuestionDto.formId,
-      order: createQuestionDto.order,
-    });
-
-    // To uncomplicate our queries, duplicate orders are not permitted.
-    // Experiment not including this for performance benefits later on.
-    if (orderExists) {
-      throw new BadRequestException(`A question with order of ${createQuestionDto.order} already exists.`);
-    }
-
     const type = createQuestionDto.type;
     const canHaveChoices = type === FieldType.Dropdown || type === FieldType.Checkbox || type === FieldType.Radio;
     const canHaveMultiple = type === FieldType.Dropdown || type === FieldType.Checkbox || type === FieldType.FileInput;
@@ -33,11 +23,16 @@ export class QuestionService {
 
     question.deleted = false;
 
-    // This can be moved to a custom validator file later as this is static validation.
-
     // Choices is only appropriate for Dropdown, Checkbox, and Radio fields.
     if (typeof createQuestionDto.choices !== 'undefined' && !canHaveChoices) {
       throw new BadRequestException(`'choices' property was found but is not appropriate for a ${type} field.`);
+    }
+
+    if (
+      typeof createQuestionDto.choices === 'undefined' &&
+      (type === FieldType.Checkbox || type === FieldType.Radio || type == FieldType.Dropdown)
+    ) {
+      throw new BadRequestException(`'choices' property was not found but is required for ${type} field.`);
     }
 
     // Multiple is only appropriate for Dropdown, Checkbox, and File Upload fields.
@@ -116,8 +111,8 @@ export class QuestionService {
       question.type === FieldType.Dropdown ||
       question.type === FieldType.Checkbox ||
       question.type === FieldType.FileInput;
-    const currentPos = question.order;
-    const desiredPos = updateQuestionDto.order;
+    // const currentPos = question.order;
+    // const desiredPos = updateQuestionDto.order;
 
     // Choices is only appropriate for Dropdown, Checkbox, and Radio fields.
     if (typeof updateQuestionDto.choices !== 'undefined' && !canHaveChoices) {
@@ -156,31 +151,22 @@ export class QuestionService {
       );
     }
 
-    if (desiredPos && currentPos !== desiredPos) {
-      const move = desiredPos > currentPos ? 'down' : 'up';
-
-      // Changes in this block occur in a transaction, meaning if they fail it's reverted.
-      await this.questionRepository.manager.transaction(async (entityManager) => {
-        // We normally do not allow a question to have an order of 0
-        // so we may use it here as a temporary placeholder.
-        question.order = 0;
-        await entityManager.save(question);
-
-        // Decrement items between the current position and the desired position.
-        if (move === 'down') {
-          await entityManager.decrement(Question, { order: Between(currentPos, desiredPos) }, 'order', 1);
-        }
-
-        // Increment items from desired position and the current position.
-        if (move === 'up') {
-          await entityManager.increment(Question, { order: Between(desiredPos, currentPos) }, 'order', 1);
-        }
-      });
-    }
-
     this.questionRepository.merge(question, updateQuestionDto);
 
     return this.questionRepository.save(question);
+  }
+
+  async reorder(reorderQuestionDto: ReorderQuestionDto): Promise<void[]> {
+    const promises = reorderQuestionDto.questions.map(question => {
+      this.questionRepository
+        .createQueryBuilder()
+        .update(Question)
+        .set({ order: question.order })
+        .where('question.id = :id', { id: question.id })
+        .execute();
+    });
+
+    return Promise.all(promises);
   }
 
   /**
@@ -190,6 +176,11 @@ export class QuestionService {
   async delete(id: string): Promise<Question> {
     // TODO: Update this to scan for submissions for soft-deletion.
     const question = await this.questionRepository.findOneOrFail(id);
+
+    if (question.answered) {
+      question.deleted = true;
+      return this.questionRepository.save(question);
+    }
 
     return this.questionRepository.remove(question);
   }

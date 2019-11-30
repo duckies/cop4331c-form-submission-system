@@ -18,15 +18,18 @@ export class SubmissionService {
    * Creates a new form submission.
    * @param createSubmissionDto
    */
-  async create(findFormDto: FindFormDto, files: Record<string, unknown>, answers: AnswersDto): Promise<Submission> {
-    const data = await this.validateSubmission(findFormDto.id, answers, files);
+  async create(findFormDto: FindFormDto, files: Record<string, unknown>, answerData: AnswersDto): Promise<Submission> {
+    const { answers, questions } = await this.validateSubmission(findFormDto.id, answerData, files);
 
-    // console.log(files);
-    console.log(answers);
+    // Sets questions that have been answered as such.
+    const promises = [];
+    questions.forEach(q => {
+      q.answered = true;
+      promises.push(q.save());
+    });
+    await Promise.all(promises);
 
-    // console.log(data);
-
-    return this.submissionRepository.save({ formId: findFormDto.id, answers: data });
+    return this.submissionRepository.save({ formId: findFormDto.id, answers });
   }
 
   /**
@@ -34,7 +37,13 @@ export class SubmissionService {
    * @param id Submission uuid.
    */
   findOne(id: number): Promise<Submission> {
-    return this.submissionRepository.findOneOrFail(id);
+    return this.submissionRepository
+      .createQueryBuilder('submission')
+      .where('submission.id = :id', { id })
+      .leftJoinAndSelect('submission.form', 'form')
+      .leftJoinAndSelect('form.questions', 'questions')
+      .orderBy({ 'questions.order': 'ASC' })
+      .getOne();
   }
 
   /**
@@ -42,7 +51,7 @@ export class SubmissionService {
    * @param id Form id.
    */
   findByForm(id: number): Promise<Submission[]> {
-    return this.submissionRepository.find({ formId: id });
+    return this.submissionRepository.find({ where: { formId: id }, relations: ['form'], order: { id: 'DESC' } });
   }
 
   /**
@@ -56,10 +65,10 @@ export class SubmissionService {
     formId: number,
     answers: AnswersDto,
     files: Record<string, unknown>,
-  ): Promise<Record<string, string>> {
+  ): Promise<{ answers: Record<string, string>; questions: Question[] }> {
     const parsedAnswers = {};
-
-    // Note that deleted questions aren't selected here.
+    const answeredQuestions = [];
+    // Note that deleted questions are also selected.
     const questions = await this.questionService.findByForm(formId);
 
     // Do not accept blank submissions.
@@ -73,6 +82,8 @@ export class SubmissionService {
     }
 
     for (const question of questions) {
+      if (question.deleted) continue;
+
       if (!this.hasProperty(files, question.id) && !this.hasProperty(answers, question.id)) {
         // Answer is missing for a required question.
         if (question.required === true) {
@@ -84,6 +95,7 @@ export class SubmissionService {
       }
 
       if (question.type === FieldType.FileInput) {
+        answeredQuestions.push(question);
         parsedAnswers[question.id] = files[question.id];
         continue;
       }
@@ -105,25 +117,24 @@ export class SubmissionService {
         // If we have multiple we inherently have choices (since we're not dealing with FileInput.)
         // Uses a buffer array to determine there are repeats inappropriately, e.g., ["Apple", "Apple"]
         for (const value of answers[question.id]) {
-          console.log(`${values} >? ${value}`);
           if (!values.includes(value)) {
-            console.log(`${values} does not include ${value}`);
             throw new BadRequestException(
               `Question '${question.id}' only allows the choices: {${question.choices}}. Be careful of duplicates.`,
             );
           }
 
-          values = values.filter((v) => v !== value);
+          values = values.filter(v => v !== value);
         }
         // Checkbox, Radio, and Dropdown scenario with only one allowable choice.
       } else if (question.choices && !question.choices.includes(answers[question.id] as string)) {
         throw new BadRequestException(`Question '${question.id}' does not allow the option '${answers[question.id]}'`);
       }
 
+      answeredQuestions.push(question);
       parsedAnswers[question.id] = answers[question.id];
     }
 
-    return parsedAnswers;
+    return { answers: parsedAnswers, questions: answeredQuestions };
   }
 
   /**
@@ -131,7 +142,7 @@ export class SubmissionService {
    * @param value Any value.
    */
   isArrayOfStrings(value: unknown): boolean {
-    return Array.isArray(value) && value.every((item) => typeof item === 'string');
+    return Array.isArray(value) && value.every(item => typeof item === 'string');
   }
 
   /**

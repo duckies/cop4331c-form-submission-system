@@ -1,12 +1,14 @@
 {
-  "name": "root",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "devDependencies": {
-    "lerna": "^3.18.3"
+    "lerna": "3.18.5"
   },
   "scripts": {
-    "postinstall": "npm run bootstrap",
-    "bootstrap": "lerna bootstrap --hoist",
+    "postinstall": "lerna bootstrap --hoist",
     "frontend:build": "cd frontend && npm run build",
     "frontend:start": "cd frontend && npm run start",
     "frontend:watch": "cd frontend && npm run dev",
@@ -21,10 +23,10 @@
     "console": "cd backend && ts-node -r tsconfig-paths/register src/console.ts",
     "heroku-postbuild": "cd frontend && npm run build",
     "heroku-webstart": "cd frontend && npm run start",
-    "test": "lerna run test",
     "test:e2e": "cd backend && npm run test:e2e"
   },
   "dependencies": {
+    "date-fns": "^2.8.1",
     "rimraf": "3.0.0"
   }
 }

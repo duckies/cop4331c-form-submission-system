@@ -11,7 +11,6 @@ import { JWTGuard } from '../auth/guards/jwt.guard';
 export class SubmissionController {
   constructor(private readonly submissionService: SubmissionService) {}
 
-  @UseGuards(JWTGuard)
   @Post(':id')
   @UseInterceptors(MulterInterceptor())
   create(@UploadedFiles() files, @Param() findFormDto: FindFormDto, @Body() answers: AnswersDto): Promise<Submission> {

@@ -1,4 +1,13 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { Question } from '../question/question.entity';
 import { Submission } from '../submission/submission.entity';
 import { User } from '../user/user.entity';
@@ -21,17 +30,20 @@ export class Form extends BaseEntity {
   @Column()
   inactive: boolean;
 
-  @OneToMany(() => Question, (question) => question.form, { eager: true })
+  @OneToMany(() => Question, question => question.form, { eager: true })
   questions: Question[];
 
   // Requires Submission module.
-  @OneToMany(() => Submission, (submission) => submission.form)
+  @OneToMany(() => Submission, submission => submission.form)
   submissions: Submission[];
 
   // Forms have one author.
   // If a user is deleted, the forms of theirs are also deleted.
-  @ManyToOne(() => User, (user) => user.forms, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, user => user.forms, { onDelete: 'CASCADE' })
   author: User;
+
+  @CreateDateColumn()
+  createdOn: Date;
 
   @UpdateDateColumn()
   lastUpdated: Date;
