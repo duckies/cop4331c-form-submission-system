@@ -1,7 +1,14 @@
+import { join } from 'path'
 import colors from 'vuetify/es5/util/colors'
+require('dotenv').config({ path: join(__dirname, '../config.env') })
 
 export default {
   mode: 'universal',
+
+  server: {
+    port: process.env.FRONTEND_PORT || 3030,
+    host: process.env.FRONTEND_HOST || '127.0.0.1'
+  },
   /*
    ** Headers of the page
    */
@@ -23,6 +30,10 @@ export default {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css?family=Roboto+Mono:400,700&display=swap'
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css?family=Khand:700&display=swap'
       }
     ]
   },
@@ -44,7 +55,8 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxtjs/dotenv'
   ],
   /*
    ** Nuxt.js modules
@@ -54,13 +66,24 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ],
+  /**
+   * Dotenv Configuration
+   * See https://github.com/nuxt-community/dotenv-module
+   */
+  dotenv: {
+    only: [],
+    path: join(__dirname, '..'),
+    filename: 'config.env',
+    systemvars: true
+  },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    host: process.env.BACKEND_HOST,
-    port: process.env.BACKEND_PORT
+    https: process.env.BACKEND_HTTPS || false,
+    host: process.env.BACKEND_HOST || '127.0.0.1',
+    port: process.env.BACKEND_PORT || 3000
   },
 
   auth: {
@@ -91,7 +114,7 @@ export default {
         dark: true,
         themes: {
           dark: {
-            primary: colors.blue.darken2,
+            primary: '#cddc39',
             accent: colors.grey.darken3,
             secondary: colors.amber.darken3,
             info: colors.teal.lighten1,
@@ -107,7 +130,6 @@ export default {
    ** Build configuration
    */
   build: {
-    cache: true,
     extractCSS: true,
     transpile: ['vee-validate/dist/rules'],
     /*

@@ -4,9 +4,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { EntityNotFoundExceptionFilter, QueryFailedExceptionFilter } from './typeorm.filter';
+import { ConfigService } from './config/config.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  const configService: ConfigService = app.get(ConfigService);
 
   /**
    * Whitelist all arguments so they must be described in a DTO.
@@ -37,6 +40,6 @@ async function bootstrap(): Promise<void> {
    */
   app.useStaticAssets(join(__dirname, '../../..', 'files'));
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(configService.get('BACKEND_PORT') as number);
 }
 bootstrap();

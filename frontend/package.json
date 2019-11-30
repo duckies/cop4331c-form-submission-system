@@ -5,9 +5,9 @@
   "author": "Duckies",
   "private": true,
   "scripts": {
-    "dev": "nuxt --port 3030",
+    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start --port 3030",
+    "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "test": "jest"
@@ -28,6 +28,7 @@
     "vuedraggable": "^2.23.2"
   },
   "devDependencies": {
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/eslint-config": "1.1.2",
     "@nuxtjs/eslint-module": "1.1.0",
     "@nuxtjs/vuetify": "^2.0.0-alpha.0",

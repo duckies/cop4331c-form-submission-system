@@ -14,6 +14,11 @@ export type EnvConfig = Record<string, string>;
 export class ConfigService {
   private readonly envConfig: EnvConfig;
   public readonly envSchema: Joi.ObjectSchema = Joi.object({
+    BACKEND_HOST: Joi.string().default('127.0.0.1'),
+    BACKEND_PORT: Joi.number().default(3000),
+    BACKEND_HTTPS: Joi.boolean().default(false),
+    FRONTEND_HOST: Joi.string().default('127.0.0.1'),
+    FRONTEND_PORT: Joi.number().default(3030),
     NODE_ENV: Joi.string()
       .valid('development', 'production', 'test')
       .default('development'),
