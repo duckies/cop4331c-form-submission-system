@@ -3,9 +3,7 @@
     <v-row>
       <v-col>
         <h1>{{ form.title }}</h1>
-        <p v-if="form.description" class="transition-fadeIn">
-          {{ form.description }}
-        </p>
+        <p v-if="form.description" v-html="form.description" />
       </v-col>
     </v-row>
 
