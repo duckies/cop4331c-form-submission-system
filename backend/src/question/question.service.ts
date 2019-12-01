@@ -41,11 +41,7 @@ export class QuestionService {
     }
 
     // You cannot have multiple choices without literally having multiple choices.
-    if (
-      typeof createQuestionDto.choices !== 'undefined' &&
-      typeof createQuestionDto.multiple !== 'undefined' &&
-      createQuestionDto.choices.length === 1
-    ) {
+    if (createQuestionDto.choices && createQuestionDto.multiple && createQuestionDto.choices.length === 1) {
       throw new BadRequestException(`There cannot be only one choice and multiple allowable selections.`);
     }
 
@@ -129,11 +125,7 @@ export class QuestionService {
     }
 
     // You cannot have multiple choices without literally having multiple choices.
-    if (
-      typeof updateQuestionDto.choices !== 'undefined' &&
-      typeof updateQuestionDto.multiple !== 'undefined' &&
-      updateQuestionDto.choices.length === 1
-    ) {
+    if (updateQuestionDto.choices && updateQuestionDto.multiple && updateQuestionDto.choices.length === 1) {
       throw new BadRequestException(`There cannot be only one choice and multiple allowable selections.`);
     }
 

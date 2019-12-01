@@ -19,7 +19,7 @@
               :question="question"
               v-on="$listeners"
             />
-            <v-btn type="submit">Submit</v-btn>
+            <v-btn :loading="formLoading" type="submit">Submit</v-btn>
           </v-form>
         </validation-observer>
       </v-col>
@@ -39,6 +39,9 @@ export default {
   computed: {
     form() {
       return this.$store.state.form.form
+    },
+    formLoading() {
+      return this.$store.state.form.status === 'loading'
     },
     formError() {
       return this.$store.state.form.error
