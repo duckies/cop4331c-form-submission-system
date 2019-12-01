@@ -12,7 +12,6 @@ export class UpdateQuestionDto {
 
   @IsOptional()
   @IsNumber()
-  @IsPositive()
   order?: number;
 
   @IsOptional()

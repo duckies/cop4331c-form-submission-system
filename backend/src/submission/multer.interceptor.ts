@@ -53,9 +53,17 @@ export function MulterInterceptor(): Type<NestInterceptor> {
       };
 
       await new Promise((resolve, reject) => {
+        const storage = multer.diskStorage({
+          destination: function(req, file, cb) {
+            cb(null, '../files');
+          },
+          filename: function(req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname);
+          },
+        });
         const fields = questions.map((q: Question) => ({ name: q.id, maxCount: q.fileMaxCount }));
 
-        multer({ dest: '../files', fileFilter }).fields(fields)(req, res, (err: Error) => {
+        multer({ storage, fileFilter }).fields(fields)(req, res, (err: Error) => {
           if (err) {
             const error = transformException(err);
             return reject(error);

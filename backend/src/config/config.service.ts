@@ -14,6 +14,11 @@ export type EnvConfig = Record<string, string>;
 export class ConfigService {
   private readonly envConfig: EnvConfig;
   public readonly envSchema: Joi.ObjectSchema = Joi.object({
+    BACKEND_HOST: Joi.string().default('127.0.0.1'),
+    BACKEND_PORT: Joi.number().default(3000),
+    BACKEND_HTTPS: Joi.boolean().default(false),
+    FRONTEND_HOST: Joi.string().default('127.0.0.1'),
+    FRONTEND_PORT: Joi.number().default(3030),
     NODE_ENV: Joi.string()
       .valid('development', 'production', 'test')
       .default('development'),
@@ -21,12 +26,12 @@ export class ConfigService {
     DATABASE_TYPE: Joi.string()
       .valid('postgres', 'mysql')
       .required(),
-    DATABASE_HOST: Joi.string().required(),
+    DATABASE_HOST: Joi.string().default('localhost'),
     DATABASE_PORT: Joi.number().required(),
     DATABASE_USERNAME: Joi.string().required(),
     DATABASE_PASSWORD: Joi.string().required(),
     DATABASE_NAME: Joi.string().required(),
-    DATABASE_SYNCHRONIZE: Joi.boolean(),
+    DATABASE_SYNCHRONIZE: Joi.boolean().default(false),
     DATABASE_SSL: Joi.boolean(),
     DROP_SCHEMA: Joi.boolean()
       .optional()

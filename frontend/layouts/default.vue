@@ -1,9 +1,7 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-content>
-      <v-container>
-        <nuxt />
-      </v-container>
+      <nuxt />
     </v-content>
   </v-app>
 </template>
@@ -12,7 +10,7 @@
 export default {
   data() {
     return {
-      title: 'Vuetify.js'
+      title: 'Form Submission System'
     }
   }
 }
