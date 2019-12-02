@@ -156,7 +156,7 @@ describe('QuestionService', () => {
   it('should return a question on findOne()', async () => {
     const question = new Question();
 
-    jest.spyOn(questionRepository, 'findOne').mockResolvedValueOnce(question as never);
+    jest.spyOn(questionRepository, 'findOneOrFail').mockResolvedValueOnce(question);
 
     expect(await questionService.findOne(null)).toEqual(question);
   });

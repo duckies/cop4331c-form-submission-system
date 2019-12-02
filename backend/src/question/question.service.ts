@@ -74,7 +74,7 @@ export class QuestionService {
    * @param id Question UUID.
    */
   findOne(id: string): Promise<Question> {
-    return this.questionRepository.findOne(id);
+    return this.questionRepository.findOneOrFail(id);
   }
 
   /**

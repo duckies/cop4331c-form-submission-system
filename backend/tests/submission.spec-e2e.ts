@@ -53,14 +53,14 @@ describe('SubmissionController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ title: 'TextArea Question', formId, order: 1, type: 'TextArea', required: true })
       .expect(201)
-      .then((resp) => (uuid = resp.body.id));
+      .then(resp => (uuid = resp.body.id));
 
     await request(app.getHttpServer())
       .post(`/submission/${formId}`)
       .set('Authorization', `Bearer ${token}`)
       .field(uuid, 'Textual answer...')
       .expect(201)
-      .then((resp) => {
+      .then(resp => {
         expect(resp.body).toMatchObject({
           formId: formId.toString(),
           answers: {
@@ -132,14 +132,14 @@ describe('SubmissionController (e2e)', () => {
         fileMaxCount: 1,
         mimeTypes: [MimeTypes.PDF],
       })
-      .then((resp) => (uuid = resp.body.id));
+      .then(resp => (uuid = resp.body.id));
 
     await request(app.getHttpServer())
       .post(`/submission/${formId}`)
       .set('Authorization', `Bearer ${token}`)
       .attach(uuid, __dirname + '/fixtures/document.pdf')
       .expect(201)
-      .then((resp) => {
+      .then(resp => {
         expect(resp.body).toMatchObject({
           answers: {
             [uuid]: [
@@ -176,7 +176,7 @@ describe('SubmissionController (e2e)', () => {
         multiple: false,
         choices: ['Apple', 'Banana'],
       })
-      .then((resp) => (uuid = resp.body.id));
+      .then(resp => (uuid = resp.body.id));
 
     await request(app.getHttpServer())
       .post(`/submission/${formId}`)
@@ -239,7 +239,7 @@ describe('SubmissionController (e2e)', () => {
       .get(`/submission/1`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
-      .then((resp) =>
+      .then(resp =>
         expect(resp.body).toMatchObject({
           id: 1,
           formId: 1,
@@ -255,14 +255,11 @@ describe('SubmissionController (e2e)', () => {
       .get(`/submission/form/${formId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
-      .then((resp) => {
+      .then(resp => {
         expect(Array.isArray(resp.body));
         expect(resp.body[0]).toMatchObject({
-          id: 1,
+          id: 4,
           formId: 1,
-          answers: {
-            [firstUUID]: 'Textual answer...',
-          },
         });
       });
   });
@@ -280,7 +277,7 @@ describe('SubmissionController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ title: 'Multer Test Form' })
       .expect(201)
-      .then((resp) => (formId = resp.body.id));
+      .then(resp => (formId = resp.body.id));
 
     await request(app.getHttpServer())
       .post('/question')
@@ -295,7 +292,7 @@ describe('SubmissionController (e2e)', () => {
         mimeTypes: [MimeTypes.DOCX],
       })
       .expect(201)
-      .then((resp) => (uuid = resp.body.id));
+      .then(resp => (uuid = resp.body.id));
 
     await request(app.getHttpServer())
       .post(`/submission/${formId}`)

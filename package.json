@@ -16,6 +16,7 @@
     "backend:watch": "cd backend && npm run start:dev",
     "backend:test": "cd backend && npm run test",
     "console": "cd backend && ts-node -r tsconfig-paths/register src/console.ts",
+    "test": "lerna run test",
     "test:e2e": "cd backend && npm run test:e2e"
   }
 }
